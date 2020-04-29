@@ -8,8 +8,8 @@
 
 function draw_grid( rminor, rmajor) 
 {
-    stroke( "black" );
-    fill( "black" );;
+    stroke( "gray" );
+    fill( "gray" );;
     let sz = g_canvas.cell_size;
     let width = g_canvas.wid*sz;
     let height = g_canvas.hgt*sz;
@@ -55,6 +55,39 @@ function draw_grid( rminor, rmajor)
     rect(12*sz, 35*sz, sz, sz)
 
     // Draw the Barn
-    fill('red')
+    fill('DarkRed')
     rect(19 * sz , 19 * sz, sz, sz)
+
+    // Draw the cave
+    fill('black')
+    for(var x = 14; x < 19; x += 1)
+    {
+        for(var y = 26; y < 30; y += 1)
+        {
+            rect(x * sz, y * sz, sz, sz)
+        }
+    }
+
+    // Draw the plots
+    fill('peru')
+    rect(8 * sz, 13 * sz, sz, sz) // plot 1 at 8, 13
+    rect(8 * sz, 10 * sz, sz, sz) // plot 2 at 8, 10
+    rect(11* sz, 13 * sz, sz, sz) // plot 3 at 11, 13
+    rect(11* sz, 10 * sz, sz, sz) // plot 4 at 11, 10
+
+    rect(15* sz, 10 * sz, sz, sz) // plot 5 at 8, 13
+    rect(15* sz, 13 * sz, sz, sz) // plot 6 at 15, 13
+    rect(18* sz, 13 * sz, sz, sz) // plot 7 at 18, 13
+    rect(18* sz, 10 * sz, sz, sz) // plot 8 at 18, 10
+
+    rect(22* sz, 10 * sz, sz, sz) // plot 9 at 22, 10
+    rect(25* sz, 10 * sz, sz, sz) // plot 10 at 25, 10
+    rect(22* sz, 13 * sz, sz, sz) // plot 11 at 22, 13
+    rect(25* sz, 13 * sz, sz, sz) // plot 12 at 25, 13
+
+    rect(29* sz, 10 * sz, sz, sz) // plot 13 at 29, 10
+    rect(32* sz, 10 * sz, sz, sz) // plot 14 at 32, 10
+    rect(29* sz, 13 * sz, sz, sz) // plot 15 at 29, 13
+    rect(32* sz, 13 * sz, sz, sz) // plot 16 at 32, 13
+
 }

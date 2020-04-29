@@ -312,48 +312,133 @@ poor.
                       ;;dbg (logr (concat "rbg-sum = " (stgr rbg-sum)))
     rbg-sum))
 
-;; ================================================== jp-draw-bot ====
-(defun jp-draw-bot ( )
+;; ================================================== jp-draw-farmzoidOne ====
+(defun jp-draw-farmzoidOne ( )
   (let* ((sz (js "g_canvas.cell_size"))
          (zz (- sz 2)) ;; -2 to size inside cell grid lines.
          ;; bot.x * sz to cvt from cell pos to pixel pos
          ;; +1 to paint inside the grid lines
-         (xx (+ 1 (* sz (js "g_bot.x"))))
-         (yy (+ 1 (* sz (js "g_bot.y"))))
-         (pix (jp-cell-rbg-sum xx yy)))    
-    (if (= 0 pix) ;; Q: paint a color, or repaint it black.
-        (let ( )
-          (js "stroke( 'white' )" ) ;; Named color.
-          (js "fill( '#' + g_bot.color )")) ;; "#RGB" color
-      (js "stroke( 'black' )" )
-      (js "fill( 'black' )"))
-    (if (= 0 (js "g_bot.odd"))
-        (jp-rect xx yy zz zz)
-      (jp-circle xx yy zz) )))
+         (xx (+ 1 (* sz (js "farmzoidOne.x"))))
+         (yy (+ 1 (* sz (js "farmzoidOne.y"))))
+         (pix (jp-cell-rbg-sum xx yy)))   
+         (js "stroke( 'black' )" ) ;; Named color.
+         (js "fill( farmzoidOne.color )") ;; "#RGB" color
+         (jp-rect xx yy zz zz)))
 
-;; ================================================== jp-move-bot ====
-(defun jp-move-bot ()
-  (let* ((dx (- (round (* 2 (random))) 1))
-         (dy (- (round (* 2 (random))) 1))
+
+;; ================================================== jp-move-farmzoidOne ====
+(defun jp-move-farmzoidOne ()
+  (let* ((dx (+ 0))
+         (dy (- 0))
          ;; We use dummy vars just so we can logr stuff as it's made.
          (ab (logr (stgr (list "dx dy = " dx dy))))
-         (gbot (js "g_bot"))
-         (bodd (js "g_bot.odd")) ;; 1st time, odd is MIA & we get nil.
-         (aab (logr (stgr (list "bodd = " bodd))))
-         ;; Here, we use (or add and use) the g_bot.odd slot.
-         (aac (set gbot "odd" (- 1 (or bodd 0))))
-         (bx (js "g_bot.x"))
+         (farmzoidOne (js "farmzoidOne"))
+         (bx (js "farmzoidOne.x"))
          (boxwid (js "g_box.wid"))
          (newx (% (+ dx bx boxwid) boxwid))
-         (by (js "g_bot.y"))
+         (by (js "farmzoidOne.y"))
          (boxhgt (js "g_box.hgt"))
          (newy (% (+ dy by boxhgt) boxhgt))
          (ac (logr (stgr (list "newx newy = " newx newy))))
-         (bcolor (js "g_bot.color"))
-         (newcolor (+ 100 (% (+ 1 bcolor) 156))))
-    (js (concat "g_bot.x = " (stgr newx)))
-    (js (concat "g_bot.y = " (stgr newy)))
-    (js (concat "g_bot.color = " (stgr newcolor)))))
+         (bcolor (js "farmzoidOne.color")))
+    (js (concat "farmzoidOne.x = " (stgr newx)))
+    (js (concat "farmzoidOne.y = " (stgr newy)))))
+
+
+;; ================================================== jp-move-farmzoidTwo ====
+(defun jp-move-farmzoidTwo ()
+  (let* ((dx (+ 0))
+         (dy (- 0))
+         ;; We use dummy vars just so we can logr stuff as it's made.
+         (ab (logr (stgr (list "dx dy = " dx dy))))
+         (farmzoidTwo (js "farmzoidTwo"))
+         (bx (js "farmzoidTwo.x"))
+         (boxwid (js "g_box.wid"))
+         (newx (% (+ dx bx boxwid) boxwid))
+         (by (js "farmzoidTwo.y"))
+         (boxhgt (js "g_box.hgt"))
+         (newy (% (+ dy by boxhgt) boxhgt))
+         (ac (logr (stgr (list "newx newy = " newx newy))))
+         (bcolor (js "farmzoidTwo.color")))
+    (js (concat "farmzoidTwo.x = " (stgr newx)))
+    (js (concat "farmzoidTwo.y = " (stgr newy)))))
+
+    
+;; ================================================== jp-draw-farmzoidTwo ====    
+(defun jp-draw-farmzoidTwo ( )
+  (let* ((sz (js "g_canvas.cell_size"))
+         (zz (- sz 2)) ;; -2 to size inside cell grid lines.
+         ;; bot.x * sz to cvt from cell pos to pixel pos
+         ;; +1 to paint inside the grid lines
+         (xx (+ 1 (* sz (js "farmzoidTwo.x"))))
+         (yy (+ 1 (* sz (js "farmzoidTwo.y"))))
+         (pix (jp-cell-rbg-sum xx yy)))   
+         (js "stroke( 'black' )" ) ;; Named color.
+         (js "fill( farmzoidTwo.color )") ;; "#RGB" color
+         (jp-rect xx yy zz zz)))
+
+;; ================================================== jp-move-farmzoidThree ====
+(defun jp-move-farmzoidThree ()
+  (let* ((dx (+ 0))
+         (dy (- 0))
+         ;; We use dummy vars just so we can logr stuff as it's made.
+         (ab (logr (stgr (list "dx dy = " dx dy))))
+         (farmzoidThree (js "farmzoidThree"))
+         (bx (js "farmzoidThree.x"))
+         (boxwid (js "g_box.wid"))
+         (newx (% (+ dx bx boxwid) boxwid))
+         (by (js "farmzoidThree.y"))
+         (boxhgt (js "g_box.hgt"))
+         (newy (% (+ dy by boxhgt) boxhgt))
+         (ac (logr (stgr (list "newx newy = " newx newy))))
+         (bcolor (js "farmzoidThree.color")))
+    (js (concat "farmzoidThree.x = " (stgr newx)))
+    (js (concat "farmzoidThree.y = " (stgr newy)))))
+  
+;; ================================================== jp-draw-farmzoidThree ====
+(defun jp-draw-farmzoidThree ( )
+  (let* ((sz (js "g_canvas.cell_size"))
+         (zz (- sz 2)) ;; -2 to size inside cell grid lines.
+         ;; bot.x * sz to cvt from cell pos to pixel pos
+         ;; +1 to paint inside the grid lines
+         (xx (+ 1 (* sz (js "farmzoidThree.x"))))
+         (yy (+ 1 (* sz (js "farmzoidThree.y"))))
+         (pix (jp-cell-rbg-sum xx yy)))   
+         (js "stroke( 'black' )" ) ;; Named color.
+         (js "fill( farmzoidThree.color )") ;; "#RGB" color
+         (jp-rect xx yy zz zz)))
+
+;; ================================================== jp-move-farmzoidFour ====
+(defun jp-move-farmzoidFour ()
+  (let* ((dx (+ 0))
+         (dy (- 0))
+         ;; We use dummy vars just so we can logr stuff as it's made.
+         (ab (logr (stgr (list "dx dy = " dx dy))))
+         (farmzoidFour (js "farmzoidFour"))
+         (bx (js "farmzoidFour.x"))
+         (boxwid (js "g_box.wid"))
+         (newx (% (+ dx bx boxwid) boxwid))
+         (by (js "farmzoidFour.y"))
+         (boxhgt (js "g_box.hgt"))
+         (newy (% (+ dy by boxhgt) boxhgt))
+         (ac (logr (stgr (list "newx newy = " newx newy))))
+         (bcolor (js "farmzoidFour.color")))
+    (js (concat "farmzoidFour.x = " (stgr newx)))
+    (js (concat "farmzoidFour.y = " (stgr newy)))))
+
+;; ================================================== jp-draw-farmzoidFour ====
+(defun jp-draw-farmzoidFour ( )
+  (let* ((sz (js "g_canvas.cell_size"))
+         (zz (- sz 2)) ;; -2 to size inside cell grid lines.
+         ;; bot.x * sz to cvt from cell pos to pixel pos
+         ;; +1 to paint inside the grid lines
+         (xx (+ 1 (* sz (js "farmzoidFour.x"))))
+         (yy (+ 1 (* sz (js "farmzoidFour.y"))))
+         (pix (jp-cell-rbg-sum xx yy)))   
+         (js "stroke( 'black' )" ) ;; Named color.
+         (js "fill( farmzoidFour.color )") ;; "#RGB" color
+         (jp-rect xx yy zz zz)))
+
 
 ;; Build & Setup l4j.draw_fn(): a JP lisp fn callable from JS.
 ;; NB, a JS global var isn't same as a JP global var.
@@ -362,8 +447,14 @@ poor.
 (let* ((l4j (js "g_l4job"))
        (fnx (lambda ( ) ;; Here's the JP lisp fn being built.
               (let ()
-                (jp-move-bot)
-                (jp-draw-bot)
+                (jp-move-farmzoidOne)
+                (jp-move-farmzoidTwo)
+                (jp-move-farmzoidThree)
+                (jp-move-farmzoidFour)
+                (jp-draw-farmzoidOne)
+                (jp-draw-farmzoidTwo)
+                (jp-draw-farmzoidThree)
+                (jp-draw-farmzoidFour)
                 ))))
   (set l4j "draw_fn" (export fnx)) ;; Here, we install the JP fn on a JS obj.
   (logr (stgr (list "g_l4job.draw_fn is set")))

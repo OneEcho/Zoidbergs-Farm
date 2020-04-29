@@ -59,10 +59,10 @@ function setup() // P5 Setup Fcn
     console.log( "End P5 setup =====");
 }
 
-var g_bot = { dir:3, x:21, y:19, color:100 }; // Dir is 0..7 clock, w 0 up.
-// var farmzoidTwo = { dir:3, x:20, y:20, color:100 }; // Dir is 0..7 clock, w 0 up.
-// var farmzoidThree = { dir:3, x:20, y:20, color:100 }; // Dir is 0..7 clock, w 0 up.
-// var farmzoidFour = { dir:3, x:20, y:20, color:100 }; // Dir is 0..7 clock, w 0 up.
+var farmzoidOne = { dir:3, x:21, y:19, color:"green" }; // Dir is 0..7 clock, w 0 up.
+var farmzoidTwo = { dir:3, x:17, y:19, color:"blue" }; // Dir is 0..7 clock, w 0 up.
+var farmzoidThree = { dir:3, x:19, y:21, color:"pink" }; // Dir is 0..7 clock, w 0 up.
+var farmzoidFour = { dir:3, x:19, y:17, color:"yellow" }; // Dir is 0..7 clock, w 0 up.
 var g_box = { t:1, hgt:47, l:1, wid:63 }; // Box in which bot can move.
 
 function csjs_get_pixel_color_sum( rx, ry )
@@ -107,13 +107,13 @@ function mousePressed( )
     let gridy = round( (y-0.5) / sz );
     //dbg console.log( "grid x,y = " + gridx + "," + gridy );
     //dbg console.log( "box wid,hgt = " + g_box.wid + "," + g_box.hgt );
-    g_bot.x = gridx + g_box.wid; // Ensure its positive.
-    //dbg console.log( "bot x = " + g_bot.x );
-    g_bot.x %= g_box.wid; // Wrap to fit box.
-    g_bot.y = gridy + g_box.hgt;
-    //dbg console.log( "bot y = " + g_bot.y );
-    g_bot.y %= g_box.hgt;
-    //dbg console.log( "bot x,y = " + g_bot.x + "," + g_bot.y );
+    farmzoidOne.x = gridx + g_box.wid; // Ensure its positive.
+    //dbg console.log( "bot x = " + farmzoidOne.x );
+    farmzoidOne.x %= g_box.wid; // Wrap to fit box.
+    farmzoidOne.y = gridy + g_box.hgt;
+    //dbg console.log( "bot y = " + farmzoidOne.y );
+    farmzoidOne.y %= g_box.hgt;
+    //dbg console.log( "bot x,y = " + farmzoidOne.x + "," + farmzoidOne.y );
     console.log( "Call g_l4job.draw_fn for mousePressed" );
     g_l4job.draw_fn( );
 }
