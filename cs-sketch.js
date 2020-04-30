@@ -38,6 +38,8 @@ function save_image( ) // btn
     save('myCanvas-' + g_frame_cnt +  '.jpg');
 }
 
+var day = 0;
+
 function setup() // P5 Setup Fcn
 {
     console.log( "Beg P5 setup =====");

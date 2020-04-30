@@ -6,10 +6,12 @@
 // Draw a fancy grid with major & minor lines 
 // & major row/col numbers.
 
+
+
 function draw_grid( rminor, rmajor) 
 {
     stroke( "gray" );
-    fill( "gray" );;
+    fill( "gray" );
     let sz = g_canvas.cell_size;
     let width = g_canvas.wid*sz;
     let height = g_canvas.hgt*sz;
