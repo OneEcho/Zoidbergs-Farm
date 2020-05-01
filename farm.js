@@ -153,9 +153,20 @@ NR2 : If day is rainy
 NR3 : if day is cloudy
         do not increment plant growth
 
+
 *******************************************************************************************************************/
 class FMS {
-    constructor() {
-        
+    constructor(dayCount) {
+        this.taskList = null;
+        this.taskCount = 0;
+        this.day = dayCount;
     }
 }
+// End of Farm Objects
+
+
+// Farm Methods
+
+
+
+// End of Farm Methods
