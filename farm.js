@@ -56,18 +56,18 @@ class Nature {
         
     }
     
-    update
-
 }
 
 /*******************************************************************************************************************
 plantType       : apple, corn, berry
 waterReserve    : 0 to 3
 growthCycle     : seed, stalk, bush, flower
+                : each plantType will have a certain day at which it will progress to the next stage of growth
 fruitColor      : green, yellow, black, no color
 fertilizer      : True or False
 x               : x-coord
 y               : y-coord
+blight          : bCorn, bApple, bBerry
 *******************************************************************************************************************/
 class Plant {
     constructor() {
@@ -76,7 +76,7 @@ class Plant {
         this.waterReserve = 0;
         this.fruitColor = null;
         this.fertilizer = false;
-        this.blight = false;
+        this.blight = "bApple";
     }
 }
 
@@ -132,14 +132,26 @@ Rule 3: if there is a seed, check if there is fertilizer
 Rule 4: if there is a fertilizer, check water reserve is between 1 and 3
             if >= 3 then dont water
             if < 3 water
-Rule 5: if nature says its rainy
-            add 1 
+Rule 5: if plant has blight
+            do not increment plant growth day until soap is applied
+Rule 6: if plant is a fruit an is red
+            harvest
+Rule 7: if plant is a fruit and has 0 water reserve
+            decrement color
+Rule 8: if plant is a fruit and is not red or green
+            add 2 units of water (counts as 2 tasks for farmzoid)
+Rule 9: if plant is a fruit and is black
+            replant seed
+Rule 10:if plant is fruit and water is more than 3
+            indicate overwater and wont change until it comes back to 3
 
 Nature Rules
 NR1 : If day is clear
         decrement water reserve by 1
 NR2 : If day is rainy
         increment water reserve by 1
+NR3 : if day is cloudy
+        do not increment plant growth
 
 *******************************************************************************************************************/
 class FMS {
