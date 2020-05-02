@@ -14,11 +14,12 @@
     <title>Jathp-P5-JS-HTML</title>     <!-- Browser or tab title -->
     <link rel="stylesheet" href="assets/styles.css">    <!-- Tiny CSS style file -->
     <style> body {padding: 0; margin: 0;} </style>    <!-- Bit of in-line CSS -->
+    
+    <script type="text/javascript" src="farm.js"></script> <!-- Load the required classes for the farm -->
+    
     <script src="p5.js"></script>    <!-- Load P5.JS, one file -->
     <!-- For more P5.JS, CF https://github.com/processing/p5.js/wiki -->
     <script src="cs-sketch.js"></script>    <!-- Load my setup+draw P5-req'd fcns -->
-    <script src="farm.js"></script> <!-- Load the required classes for the farm -->
-
     <script type="text/javascript" src="Jathp.js"></script>    <!-- Load Jathp -->
 
   </head>
@@ -139,7 +140,6 @@
 (def != /=)
 
 </script>
-
 
 <!-- ==================================================================== -->
 <script type="text/lisp">
@@ -290,7 +290,6 @@
         retv)))
   (logr "End reverse =====")
 </script>
-
 <!-- ========================================= lisp draw fn =========== -->
 <script type="text/lisp">
 ;; Now Create simple draw fn & have P5 draw call it.
@@ -323,7 +322,7 @@ poor.
          (yy (+ 1 (* sz (js "farmzoidOne.y"))))
          (pix (jp-cell-rbg-sum xx yy)))   
          (js "stroke( 'black' )" ) ;; Named color.
-         (js "fill( farmzoidOne.color )") ;; "#RGB" color
+         (js "fill(farmzoidOne.color)") ;; "#RGB" color
          (jp-rect xx yy zz zz)))
 
 

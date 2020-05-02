@@ -92,4 +92,9 @@ function draw_grid( rminor, rmajor)
     rect(29* sz, 13 * sz, sz, sz) // plot 15 at 29, 13
     rect(32* sz, 13 * sz, sz, sz) // plot 16 at 32, 13
 
+    rect(29* sz, 16 * sz, sz, sz)
+    rect(32* sz, 16 * sz, sz, sz)
+    rect(29* sz, 19 * sz, sz, sz)
+    rect(32* sz, 19 * sz, sz, sz)
+
 }

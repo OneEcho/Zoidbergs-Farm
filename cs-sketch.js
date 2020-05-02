@@ -1,3 +1,4 @@
+/*
 // cs-sketch.js; P5 key animation fcns.  // CF p5js.org/reference
 // Time-stamp: <2020-02-17 19:15:08 Chuck Siska>
 
@@ -119,3 +120,4 @@ function mousePressed( )
     console.log( "Call g_l4job.draw_fn for mousePressed" );
     g_l4job.draw_fn( );
 }
+*/

@@ -19,7 +19,7 @@ let plotLocations = [
 ];
 
 // random type of blight shuffler
-function shuffle(array) {
+function shuffleBlight(array) {
     var currentIndex = array.length, temporaryValue, randomIndex;
   
     // While there remain elements to shuffle...
@@ -81,7 +81,7 @@ class Nature {
         console.log("Rolling for blight");
         let blight_chance = Math.floor((Math.random() * 10) + 1);  // 1 - 10, 2% chance of having blight and stalling growth
         var blightType = ["corn", "berry", "apple"];
-        shuffle(blightType);
+        shuffleBlight(blightType);
         if(blight_chance === 1 || blight_chance === 2) {    
             console.log("Blight occurred");
             this.blight = blightType[0];
@@ -268,13 +268,14 @@ taskNum     : 0 to 50 -- keeps track of how many tasks its done
 equipment   : plot, water can, fertilizer, barrel, or soap
 *******************************************************************************************************************/
 class Farmzoid {
-    constructor(currX, currY) {
+    constructor(x, y, color) {
         this.taskNum = 0;
         this.equipment = null;
-        this.currX = 0;
-        this.currY = 0;
+        this.x = x;
+        this.y = y;
         this.barnX = 19;
         this.barnY = 19;
+        this.color = color;
         this.plotLocations = plotLocations;
     }
 }
@@ -428,8 +429,136 @@ function dayCounter(dayCount) {
 var nature = new Nature();
 var fms = new FMS(1);
 var workingmem = new WorkingMem(nature, fms, validPlots);
+
+farmzoidOne = new Farmzoid(21, 19, "green");
+console.log(farmzoidOne.x);
+console.log(farmzoidOne.y);
+console.log(farmzoidOne.color);
+var farmzoidTwo = new Farmzoid(17, 19, "blue");
+var farmzoidThree = new Farmzoid(19, 21, "pink");
+var farmzoidFour = new Farmzoid(19, 17, "yellow");
+
 // nature.randCloudy();
 // nature.randBlight();
 // console.log(nature.blight);
 
 // End of Farm Methods
+
+/*******************************************************************************************************************
+Bot Movement
+*******************************************************************************************************************/
+// Make global g_canvas JS 'object': a key-value 'dictionary'.
+var g_canvas; // JS Global var, w canvas size info.
+var g_frame_cnt; // Setup a P5 display-frame counter, to do anim
+var g_frame_mod; // Update ever 'mod' frames.
+var g_stop; // Go by default.
+var g_cnv;   // To hold a P5 canvas.
+var g_button; // btn
+var g_button2; // btn
+
+var g_l4job = { id:1 }; // Put Lisp stuff for JS-to-access in ob; id to make ob.
+
+function do_btn( )
+{ // grab code from csu\assets\js\js+p5+editbox
+
+    // Creates an <input></input> element in the DOM for text input.
+    // Use g_input.size() to set the display length of the box.
+    g_input = createInput( ); // Create input textbox; get via "contentx = g_input.value();"
+    g_input.position(  20, 30 );
+    g_button = createButton( "Submit" );
+    g_button.id( "btn" ); //Add for P5 btn onclick
+    g_button.position( 160, 30 );
+
+    g_button2 = createButton( "Save Image" );
+    g_button2.position( 20, 60 );
+    g_button2.mousePressed( save_image ); // the callback
+}
+
+function save_image( ) // btn
+{
+    save('myCanvas-' + g_frame_cnt +  '.jpg');
+}
+
+function setup() // P5 Setup Fcn
+{
+    
+    console.log( "Beg P5 setup =====");
+    console.log( "@: log says hello from P5 setup()." );
+    g_canvas = { cell_size:20, wid:40, hgt:40 };
+    g_frame_cnt = 0; // Setup a P5 display-frame counter, to do anim
+    g_frame_mod = 24; // Update ever 'mod' frames.
+    g_stop = 0; // Go by default.
+
+    let sz = g_canvas.cell_size;
+    let width = sz * g_canvas.wid;  // Our 'canvas' uses cells of given size, not 1x1.
+    let height = sz * g_canvas.hgt;
+    g_cnv = createCanvas( width, height );  // Make a P5 canvas.
+    background('tan')
+    console.log( "@: createCanvas()." );
+    draw_grid( 20, 50);
+    do_btn( ); // 
+
+    console.log( "End P5 setup =====");
+}
+
+/*
+var farmzoidOne = { dir:3, x:21, y:19, color:"green"}; // Dir is 0..7 clock, w 0 up.
+var farmzoidTwo = { dir:3, x:17, y:19, color:"blue" }; // Dir is 0..7 clock, w 0 up.
+var farmzoidThree = { dir:3, x:19, y:21, color:"pink" }; // Dir is 0..7 clock, w 0 up.
+var farmzoidFour = { dir:3, x:19, y:17, color:"yellow" }; // Dir is 0..7 clock, w 0 up.
+*/
+
+var g_box = { t:1, hgt:47, l:1, wid:63 }; // Box in which bot can move.
+
+function csjs_get_pixel_color_sum( rx, ry )
+{
+    let acolors = get( rx, ry ); // Get pixel color [RGBA] array.
+    let sum = acolors[ 0 ] + acolors[ 1 ] + acolors[ 2 ]; // Sum RGB.
+    //dbg console.log( "color_sum = " + sum );
+    return sum;
+}
+
+function draw_update()  // Update our display.
+{
+    console.log( "Call g_l4job.draw_fn" );
+    g_l4job.draw_fn();
+}
+
+function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
+{
+    ++g_frame_cnt;
+    if (0 == g_frame_cnt % g_frame_mod)
+    {
+        console.log( "g_frame_cnt = " + g_frame_cnt );
+        if (!g_stop) draw_update();
+    }
+}
+
+function keyPressed( )
+{
+    console.log( "@: keyPressed " );
+    g_stop = ! g_stop;
+    if (g_stop) { noLoop(); } else {loop();}
+}
+
+function mousePressed( )
+{
+    console.log( "@: mousePressed " );
+    let x = mouseX;
+    let y = mouseY;
+    //dbg console.log( "mouse x,y = " + x + "," + y );
+    let sz = g_canvas.cell_size;
+    let gridx = round( (x-0.5) / sz );
+    let gridy = round( (y-0.5) / sz );
+    //dbg console.log( "grid x,y = " + gridx + "," + gridy );
+    //dbg console.log( "box wid,hgt = " + g_box.wid + "," + g_box.hgt );
+    farmzoidOne.x = gridx + g_box.wid; // Ensure its positive.
+    //dbg console.log( "bot x = " + farmzoidOne.x );
+    farmzoidOne.x %= g_box.wid; // Wrap to fit box.
+    farmzoidOne.y = gridy + g_box.hgt;
+    //dbg console.log( "bot y = " + farmzoidOne.y );
+    farmzoidOne.y %= g_box.hgt;
+    //dbg console.log( "bot x,y = " + farmzoidOne.x + "," + farmzoidOne.y );
+    console.log( "Call g_l4job.draw_fn for mousePressed" );
+    g_l4job.draw_fn( );
+}
