@@ -78,7 +78,7 @@ function csjs_get_pixel_color_sum( rx, ry )
 function draw_update()  // Update our display.
 {
     console.log( "Call g_l4job.draw_fn" );
-    g_l4job.draw_fn( );
+    g_l4job.draw_fn();
 }
 
 function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.

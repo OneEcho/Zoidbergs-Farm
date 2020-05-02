@@ -7,6 +7,7 @@ wind            : N, S, E, W
 dayCount        : current day number (cannot exceed 40)
 temperature     : warm or cold
 plots           : list of plots on the land
+blight          : bApple, bCorn, bBerry, none
 *******************************************************************************************************************/
 
 let plotLocations = [
@@ -14,7 +15,7 @@ let plotLocations = [
     [8, 10],
     [11, 13],
     [11, 10],
-    [15, 10] 
+    [15, 10]
 ];
 
 class Nature {
@@ -23,6 +24,8 @@ class Nature {
         this.wind = "N";
         this.dayCount = 0;
         this.temperature = "warm";
+        this.blight = "none";
+        this.moveCounter = 0;
         this.plots = [new Plot(plotLocations[0][0], plotLocations[0][1]), 
                       new Plot(plotLocations[1][0], plotLocations[1][1]), 
                       new Plot(plotLocations[2][0], plotLocations[2][1]), 
@@ -30,30 +33,68 @@ class Nature {
                       new Plot(plotLocations[4][0], plotLocations[4][1])];
     }
 
-    randCloudy() {
-        let cloudy_chance = Math.floor((Math.random() * 10) + 1);  // 1 - 10, 10% chance of being cloudy
-        if(cloudy_chance === 1) {
+    updateWeather() {
+        this.randCloudy();
+    }
+
+    randCloudy() { 
+        console.log("Rolling for clouds");
+        let rng = Math.floor((Math.random() * 10) + 1);  // 1 - 10, 10% chance of being cloudy
+        if(rng === 1) {
+            console.log("Sky is cloudy");
             this.sky = "cloudy";
 
-            let rainy_chance = Math.floor((Math.random() * 10) + 1);  // 1 - 10, 50% chance of raining when cloudy
-            if(rainy_chance <= 5) {
+            rng = Math.floor((Math.random() * 10) + 1);  // 1 - 10, 50% chance of raining when cloudy
+            if(rng <= 5) {
+                console.log("Sky is rainy");
                 this.sky = "rainy";
                 return "rainy";
             }
 
             return "cloudy";
         }
+        return false;
     }
 
+        
     randBlight() {
+        console.log("Rolling for blight");
         let blight_chance = Math.floor((Math.random() * 10) + 1);  // 1 - 10, 2% chance of having blight and stalling growth
         if(blight_chance === 1 || blight_chance === 2) {    
+            console.log("Blight occurred");
             return "blight";
         }
     }
 
-    updateGrowthCycle(plant) {
-        
+    updatePlantGrowthCycle(plant) {
+        if(this.sky === "cloudy") {
+            return false; // // delay growth
+        }
+        else {
+            
+        }
+    }
+
+    updatePlantColor(plant) {
+
+    }
+
+    updatePlantWater(plant) {
+        if(this.sky === "rainy") {
+            console.log("It's raining, waterReserve++")
+            plant.waterReserve++;
+        } else {
+            console.log()
+        }
+
+    }
+
+    updatePlantFruitingState(plant) {
+
+    }
+
+    decrementWaterReserve(plant) {
+        plant.waterReserve--;
     }
     
 }
@@ -67,16 +108,22 @@ fruitColor      : green, yellow, black, no color
 fertilizer      : True or False
 x               : x-coord
 y               : y-coord
-blight          : bCorn, bApple, bBerry
 *******************************************************************************************************************/
 class Plant {
     constructor() {
-        this.plantType = "apple"
+        this.plantType = "apple";
         this.growthCycle = "seed";
+        this.plantColor = "green";
         this.waterReserve = 0;
-        this.fruitColor = null;
+        this.fruitingState = null;
         this.fertilizer = false;
-        this.blight = "bApple";
+        this.plantBlight = null;
+    }
+
+    isHarvestable() {
+        if(this.fruitingState === "red")
+            return true
+        return false;
     }
 }
 
@@ -162,11 +209,31 @@ class FMS {
         this.day = dayCount;
     }
 }
+
+class WorkingMem{
+    constructor(nature, fms) {
+        this.nature = nature;
+        this.fms = fms;
+        this.farmzoid = [new Farmzoid(21, 19), new Farmzoid(17, 19), new Farmzoid(19, 21), new Farmzoid(19, 17)];
+    }
+}
 // End of Farm Objects
 
 
 // Farm Methods
 
+// call to change day, and also check to see if the growing season has ended
+function dayCounter(dayCount) {
+    dayCount = dayCount + 1;
 
+    if( dayCount == 41){
+        // growing season ends
+    }
+}
+
+var nature = new Nature();
+var fms = new FMS(1);
+var workingmem = new WorkingMem(nature, fms);
+// nature.randCloudy();
 
 // End of Farm Methods
