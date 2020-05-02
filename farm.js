@@ -2,11 +2,26 @@
 // Farm objects
 
 let plotLocations = [
-    [8, 13],
-    [8, 10],
-    [11, 13],
-    [11, 10],
-    [15, 10]
+    [8, 13],    // plot 1
+    [8, 10],    // plot 2
+    [11, 13],   // plot 3
+    [11, 10],   // plot 4
+    [15, 10],   // plot 5
+    [15, 13],   // plot 6
+    [18, 13],   // plot 7
+    [18, 10],   // plot 8
+    [22, 10],   // plot 9
+    [25, 10],   // plot 10
+    [22, 13],   // plot 11
+    [25, 13],   // plot 12
+    [29, 10],   // plot 13
+    [32, 10],   // plot 14
+    [29, 13],   // plot 15
+    [32, 13],   // plot 16
+    [29, 16],   // plot 17
+    [32, 16],   // plot 18
+    [29, 19],   // plot 19
+    [32, 19]    // plot 20
 ];
 
 // random type of blight shuffler
@@ -47,11 +62,7 @@ class Nature {
         this.temperature = "warm";
         this.blight = null;
         this.moveCounter = 0;
-        this.plots = [new Plot(plotLocations[0][0], plotLocations[0][1]), 
-                      new Plot(plotLocations[1][0], plotLocations[1][1]), 
-                      new Plot(plotLocations[2][0], plotLocations[2][1]), 
-                      new Plot(plotLocations[3][0], plotLocations[3][1]), 
-                      new Plot(plotLocations[4][0], plotLocations[4][1])];
+        this.plots = validPlots;
     }
 
     updateWeather() {
@@ -266,6 +277,15 @@ class Plot {
         this.plant = null;
         this.hasPlot = false;
     }
+
+    placePlot() {
+        this.hasPlot = true;
+    }
+
+    // call this when farmzoid plants a seed
+    plantSeed(plant) {
+        this.plant = plant;
+    }
 }
 
 /*******************************************************************************************************************
@@ -440,7 +460,22 @@ let validPlots =    [new Plot(plotLocations[0][0], plotLocations[0][1]),
                      new Plot(plotLocations[1][0], plotLocations[1][1]), 
                      new Plot(plotLocations[2][0], plotLocations[2][1]), 
                      new Plot(plotLocations[3][0], plotLocations[3][1]), 
-                     new Plot(plotLocations[4][0], plotLocations[4][1])];
+                     new Plot(plotLocations[4][0], plotLocations[4][1]),
+                     new Plot(plotLocations[5][0], plotLocations[5][1]),
+                     new Plot(plotLocations[6][0], plotLocations[6][1]),
+                     new Plot(plotLocations[7][0], plotLocations[7][1]),
+                     new Plot(plotLocations[8][0], plotLocations[8][1]),
+                     new Plot(plotLocations[9][0], plotLocations[9][1]),
+                     new Plot(plotLocations[10][0], plotLocations[10][1]),
+                     new Plot(plotLocations[11][0], plotLocations[11][1]),
+                     new Plot(plotLocations[12][0], plotLocations[12][1]),
+                     new Plot(plotLocations[13][0], plotLocations[13][1]),
+                     new Plot(plotLocations[14][0], plotLocations[14][1]),
+                     new Plot(plotLocations[15][0], plotLocations[15][1]),
+                     new Plot(plotLocations[16][0], plotLocations[16][1]),
+                     new Plot(plotLocations[17][0], plotLocations[17][1]),
+                     new Plot(plotLocations[18][0], plotLocations[18][1]),
+                     new Plot(plotLocations[19][0], plotLocations[19][1]),];
 
 
 // call to change day, and also check to see if the growing season has ended
