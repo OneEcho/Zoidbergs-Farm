@@ -65,20 +65,6 @@ class Nature {
             return "blight";
         }
     }
-
-    updatePlantColor(plant) {
-
-    }
-
-    updatePlantWater(plant) {
-        if(this.sky === "rainy") {
-            console.log("It's raining, waterReserve++")
-            plant.waterReserve++;
-        } else {
-            console.log();
-        }
-
-    }
     
 }
 
@@ -111,10 +97,12 @@ class Plant {
 
     incrementAge() {
         this.age++;
+        console.log("increased age to " + this.age)
     }
 
     decrementAge() {
         this.age--;
+        console.log("decrease age to " + this.age)
     }
 
     incrementWaterReserve() {
@@ -328,7 +316,7 @@ class FMS {
 
 class WorkingMem{
     constructor(nature, fms, validPlots) {
-        this.plot = 
+        this.validPlots = validPlots; 
         this.nature = nature;
         this.fms = fms;
         this.farmzoid = [new Farmzoid(21, 19), new Farmzoid(17, 19), new Farmzoid(19, 21), new Farmzoid(19, 17)];
@@ -337,6 +325,8 @@ class WorkingMem{
     natureEffects() {
         for(let j = 0; j < 20; j++) {
             validPlots[i].plant.incrementAge();
+            validPlots[i].plant.updateGrowthCycle();
+            validPlots[i].plant.updateFruitingState();
             if(nature.sky === "clear" && validPlots[i].plant.waterReserve > 0) {
                 validPlots[i].plant.waterReserve--;
             }
@@ -348,6 +338,10 @@ class WorkingMem{
             }
             if(validPlots[i].plant.waterReserve === 0) {
                 validPlots[i].plant.decrementFruitColor();
+            }
+            if(validPlots[i].plant.fruitingState === "black" && validPlots[i].plant.age == validPlots[i].plant.age + 2) {
+                validPlots[i].plant.plantType = null;
+                console.log("plant is now dead after 2 days of fruit being black")
             }
         }
     }
@@ -399,7 +393,7 @@ function dayCounter(dayCount) {
 
 var nature = new Nature();
 var fms = new FMS(1);
-var workingmem = new WorkingMem(nature, fms);
+var workingmem = new WorkingMem(nature, fms, validPlots);
 // nature.randCloudy();
 
 // End of Farm Methods
