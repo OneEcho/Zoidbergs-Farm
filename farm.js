@@ -430,10 +430,7 @@ var nature = new Nature();
 var fms = new FMS(1);
 var workingmem = new WorkingMem(nature, fms, validPlots);
 
-farmzoidOne = new Farmzoid(21, 19, "green");
-console.log(farmzoidOne.x);
-console.log(farmzoidOne.y);
-console.log(farmzoidOne.color);
+var farmzoidOne = new Farmzoid(21, 19, "green");
 var farmzoidTwo = new Farmzoid(17, 19, "blue");
 var farmzoidThree = new Farmzoid(19, 21, "pink");
 var farmzoidFour = new Farmzoid(19, 17, "yellow");
@@ -500,13 +497,6 @@ function setup() // P5 Setup Fcn
 
     console.log( "End P5 setup =====");
 }
-
-/*
-var farmzoidOne = { dir:3, x:21, y:19, color:"green"}; // Dir is 0..7 clock, w 0 up.
-var farmzoidTwo = { dir:3, x:17, y:19, color:"blue" }; // Dir is 0..7 clock, w 0 up.
-var farmzoidThree = { dir:3, x:19, y:21, color:"pink" }; // Dir is 0..7 clock, w 0 up.
-var farmzoidFour = { dir:3, x:19, y:17, color:"yellow" }; // Dir is 0..7 clock, w 0 up.
-*/
 
 var g_box = { t:1, hgt:47, l:1, wid:63 }; // Box in which bot can move.
 
