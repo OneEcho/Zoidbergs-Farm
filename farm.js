@@ -1,15 +1,6 @@
 // farm.js
 // Farm objects
 
-/*******************************************************************************************************************
-sky             : clear, cloud, or rainy
-wind            : N, S, E, W
-dayCount        : current day number (cannot exceed 40)
-temperature     : warm or cold
-plots           : list of plots on the land
-blight          : bApple, bCorn, bBerry, none
-*******************************************************************************************************************/
-
 let plotLocations = [
     [8, 13],
     [8, 10],
@@ -38,6 +29,16 @@ function shuffleBlight(array) {
     return array;
   }
 
+/*******************************************************************************************************************
+ Nature Class -- defines nature effects
+--------------------------------------------------------------------------------------------------------------------
+sky             : clear, cloud, or rainy
+wind            : N, S, E, W
+dayCount        : current day number (cannot exceed 40)
+temperature     : warm or cold
+plots           : list of plots on the land
+blight          : bApple, bCorn, bBerry, none
+*******************************************************************************************************************/
 class Nature {
     constructor() {
         this.sky = "clear"; 
@@ -94,6 +95,8 @@ class Nature {
 }
 
 /*******************************************************************************************************************
+Plant Class -- defines plant components
+--------------------------------------------------------------------------------------------------------------------
 plantType       : apple, corn, berry
 waterReserve    : 0 to 3
 growthCycle     : seed, stalk, bush, flower
@@ -250,6 +253,8 @@ class Plant {
 }
 
 /*******************************************************************************************************************
+Plot Class -- defines coordinates for a plot and the plant type
+--------------------------------------------------------------------------------------------------------------------
 x       : plot x-coord
 y       : plot y-coord
 plant   : apple, berry, or corn
@@ -259,13 +264,20 @@ class Plot {
         this.x = x;
         this.y = y;
         this.plant = null;
-        this.hasPlot = null;
+        this.hasPlot = false;
     }
 }
 
 /*******************************************************************************************************************
-taskNum     : 0 to 50 -- keeps track of how many tasks its done
-equipment   : plot, water can, fertilizer, barrel, or soap
+Farmzoid Class -- defines the farmzoid bot
+--------------------------------------------------------------------------------------------------------------------
+taskNum         : 0 to 50 -- keeps track of how many tasks its done
+equipment       : plot, water can, fertilizer, barrel, or soap
+barnX           : x-coord of barn
+barnY           : y-coord of barn
+x               : current x-coord
+y               : current y-coord
+plotLocations   : list of coords of valid plots
 *******************************************************************************************************************/
 class Farmzoid {
     constructor(x, y, color) {
@@ -281,8 +293,8 @@ class Farmzoid {
 }
 
 /*******************************************************************************************************************
-barnX       : x-coord of barn
-barnY      : y-coord of barn
+barnX               : x-coord of barn
+barnY               : y-coord of barn
 harvestBarrelCount  : Number of full barrels
 *******************************************************************************************************************/
 class Barn {
@@ -323,8 +335,14 @@ NR2 : If day is rainy
         increment water reserve by 1
 NR3 : if day is cloudy
         do not increment plant growth
+*******************************************************************************************************************/
 
-
+/******************************************************************************************************************
+FMS Class -- setup farmzoid tasks
+-------------------------------------------------------------------------------------------------------------------
+taskList        : List of tasks farmzoids need to do
+taskCount       : Keeps count of the number of tasts done (200 per day, 50 for each farmzoid)
+day             : Keeps track of the day
 *******************************************************************************************************************/
 class FMS {
     constructor(dayCount) {
@@ -345,6 +363,14 @@ class FMS {
     }
 }
 
+/******************************************************************************************************************
+WorkingMem Class -- sets up rules and nature effects
+-------------------------------------------------------------------------------------------------------------------
+validPlots      : List of valid plots
+nature          : Nature class to access current weather
+fms             : FMS class to access tasks
+farmzoid        : List of 4 bots
+*******************************************************************************************************************/
 class WorkingMem{
     constructor(nature, fms, validPlots) {
         this.validPlots = validPlots; 
