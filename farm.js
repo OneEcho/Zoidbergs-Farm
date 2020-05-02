@@ -18,13 +18,33 @@ let plotLocations = [
     [15, 10]
 ];
 
+// random type of blight shuffler
+function shuffle(array) {
+    var currentIndex = array.length, temporaryValue, randomIndex;
+  
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+  
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+  
+      // And swap it with the current element.
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+  
+    return array;
+  }
+
 class Nature {
     constructor() {
         this.sky = "clear"; 
         this.wind = "N";
         this.dayCount = 0;
         this.temperature = "warm";
-        this.blight = "none";
+        this.blight = null;
         this.moveCounter = 0;
         this.plots = [new Plot(plotLocations[0][0], plotLocations[0][1]), 
                       new Plot(plotLocations[1][0], plotLocations[1][1]), 
@@ -60,9 +80,14 @@ class Nature {
     randBlight() {
         console.log("Rolling for blight");
         let blight_chance = Math.floor((Math.random() * 10) + 1);  // 1 - 10, 2% chance of having blight and stalling growth
+        var blightType = ["corn", "berry", "apple"];
+        shuffle(blightType);
         if(blight_chance === 1 || blight_chance === 2) {    
             console.log("Blight occurred");
-            return "blight";
+            this.blight = blightType[0];
+        }
+        else {
+            console.log("Blight didnt occur");
         }
     }
     
@@ -89,8 +114,7 @@ class Plant {
         this.waterReserve = 0;
         this.fruitingState = null;
         this.fertilized = false;
-        this.plantBlight = null;
-        this.blight = false;
+        this.blight = null;
         this.taskDone = null;
         this.age = 0;
     }
@@ -114,7 +138,7 @@ class Plant {
 
     fixBlight() {
         if(this.taskDone === "soaping") {
-            this.blight = null;
+            this.plantBlight = null;
             console.log("blight fixed")
         }
     }
@@ -202,6 +226,12 @@ class Plant {
         if(this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve < 3 && age > 8 && this.fruitingState === "green" && this.blight === null) {
             this.fruitingState = "red"
             console.log("corn is now harvestable")
+        }
+    }
+
+    blightEffects(blight) {
+        if(blight === this.plantType) {
+            this.blight = blight
         }
     }
 
@@ -323,6 +353,7 @@ class WorkingMem{
     }
 
     natureEffects() {
+        nature.updateWeather();
         for(let j = 0; j < 20; j++) {
             validPlots[i].plant.incrementAge();
             validPlots[i].plant.updateGrowthCycle();
@@ -343,6 +374,9 @@ class WorkingMem{
                 validPlots[i].plant.plantType = null;
                 console.log("plant is now dead after 2 days of fruit being black")
             }
+            if(validPlots[i].plant.blight != null) {
+                validPlots[i].plant.blightEffects(nature.blight);
+            }
         }
     }
 
@@ -360,7 +394,7 @@ class WorkingMem{
             if(validPlots[i].plant.fertilized === true && validPlots[i].plant.waterReserve <= 3) {
                 fms.addTasks("water");
             }
-            if(validPlots[i].plant.blight === true) {
+            if(validPlots[i].plant.blight != null) {
                 fms.addTasks("soaping");
             }
             if(validPlots[i].plant.fruitingState === "red" && validPlots[i].plant.waterReserve > 0 && validPlots[i].plant.waterReserve <=3) {
@@ -395,5 +429,7 @@ var nature = new Nature();
 var fms = new FMS(1);
 var workingmem = new WorkingMem(nature, fms, validPlots);
 // nature.randCloudy();
+// nature.randBlight();
+// console.log(nature.blight);
 
 // End of Farm Methods
