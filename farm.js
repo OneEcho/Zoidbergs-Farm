@@ -102,7 +102,6 @@ class Nature {
             console.log("Blight didnt occur");
         }
     }
-    
 }
 
 /*******************************************************************************************************************
@@ -277,7 +276,7 @@ class Plot {
         this.taskDone = null;
     }
 
-    doPlitTask(task) {
+    doPlotTask(task) {
         if(task.taskName === "place plot") {
             this.hasPlot = true;
         }
@@ -402,6 +401,14 @@ class FMS {
     }
 }
 
+
+/******************************************************************************************************************
+Task Class -- task class with necessary components
+-------------------------------------------------------------------------------------------------------------------
+taskName        : name of task
+equipment       : equipment needed
+plotLocation    : location of plot that task needs to be done
+*******************************************************************************************************************/
 class Task {
     constructor(taskName, plotLocation, equipment) {
         this.taskName = taskName;
@@ -429,52 +436,42 @@ class WorkingMem{
 
     natureEffects() {
         nature.updateWeather();
-        for(let j = 0; j < 20; j++) {
-            validPlots[i].plant.incrementAge();
-            validPlots[i].plant.updateGrowthCycle();
-            validPlots[i].plant.updateFruitingState();
-            if(nature.sky === "clear" && validPlots[i].plant.waterReserve > 0) {
-                validPlots[i].plant.waterReserve--;
-            }
-            if(nature.sky === "rainy") {
-                validPlots[i].plant.waterReserve++;
-            }
-            if(nature.sky === "cloudy") {
-                validPlots[i].plant.decrementAge();
-            }
-            if(validPlots[i].plant.waterReserve === 0) {
-                validPlots[i].plant.decrementFruitColor();
-            }
-            if(validPlots[i].plant.fruitingState === "black" && validPlots[i].plant.age == validPlots[i].plant.age + 2) {
-                validPlots[i].plant.plantType = null;
-                // change back to empty plot
-                console.log("plant is now dead after 2 days of fruit being black")
-            }
-            if(validPlots[i].plant.blight != null) {
-                validPlots[i].plant.blightEffects(nature.blight);
+        for(let i = 0; i < 20; i++) {
+            if(validPlots[i].plant != null) {
+                validPlots[i].plant.incrementAge();
+                validPlots[i].plant.updateGrowthCycle();
+                validPlots[i].plant.updateFruitingState();
+                if(nature.sky === "clear" && validPlots[i].plant.waterReserve > 0) {
+                    validPlots[i].plant.waterReserve--;
+                    console.log(" day was clear, dec water");
+                }
+                if(nature.sky === "rainy") {
+                    validPlots[i].plant.waterReserve++;
+                    console.log("day was rainy, inc water");
+                }
+                if(nature.sky === "cloudy") {
+                    validPlots[i].plant.decrementAge();
+                    console.log("day was cloudy, stall ageing")
+                }
+                if(validPlots[i].plant.waterReserve === 0) {
+                    validPlots[i].plant.decrementFruitColor();
+                }
+                if(validPlots[i].plant.fruitingState === "black" && validPlots[i].plant.age == validPlots[i].plant.age + 2) {
+                    validPlots[i].plant.plantType = null;
+                    // change back to empty plot
+                    console.log("plant is now dead after 2 days of fruit being black")
+                }
+                if(validPlots[i].plant.blight != null) {
+                    validPlots[i].plant.blightEffects(nature.blight);
+                }
             }
         }
     }
 
     setupTasks() {
         for(let i = 0; i < 20; i++) {
-            if(validPlots[i].hasPlot === null){
-                fms.addTasks(new Task("place plot", validPlots[i], "plot equipment"))
-            }
-            if(validPlots[i].plant.plantType === null) {
-                fms.addTasks(new Task("plant seed", validPlots[i], "apple"));
-            }
-            if(validPlots[i].plant.fertilized === false){
-                fms.addTasks(new Task("fertilize", validPlots[i], "fertilizer"));
-            }
-            if(validPlots[i].plant.fertilized === true && validPlots[i].plant.waterReserve <= 3) {
-                fms.addTasks(new Task("watering", validPlots[i], "water"));
-            }
-            if(validPlots[i].plant.blight != null) {
-                fms.addTasks(new Task("soaping", validPLots[i], "soap"));
-            }
-            if(validPlots[i].plant.fruitingState === "red" && validPlots[i].plant.waterReserve > 0 && validPlots[i].plant.waterReserve <=3) {
-                fms.addTasks(new Task("harvest", validPlots[i], "barrel"));
+            if(validPlots[i].hasPlot === false){
+                fms.addTasks(new Task("place plot", validPlots[i], "plot equipment"));
             }
         }
     }
@@ -518,6 +515,9 @@ function dayCounter(dayCount) {
 var nature = new Nature();
 var fms = new FMS(1);
 var workingmem = new WorkingMem(nature, fms, validPlots);
+workingmem.natureEffects();
+workingmem.setupTasks();
+console.log(workingmem.fms.taskList);
 
 var farmzoidOne = new Farmzoid(21, 19, "green");
 var farmzoidTwo = new Farmzoid(17, 19, "blue");
