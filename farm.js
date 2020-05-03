@@ -143,27 +143,22 @@ class Plant {
         console.log("decrease age to " + this.age)
     }
 
-    incrementWaterReserve() {
+    doPlantTask() {
         if(this.taskDone === "watering") {
             waterReserve++;
             console.log("plant watered")
         }
-    }
-
-    fixBlight() {
         if(this.taskDone === "soaping") {
             this.plantBlight = null;
             console.log("blight fixed")
         }
-    }
-
-    addFertilizer() {
         if(this.taskDone === "fertilize") {
             this.fertilized = true;
             console.log("plant fertilized")
         }
     }
 
+    // do plant color change here
     updateGrowthCycle() {
         // Apple growth cycle
         if(this.plantType === "apple" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 1 && this.growthCycle === "seed" && this.blight === null) {
@@ -223,6 +218,7 @@ class Plant {
         }
     }
 
+    // do fruit color change here
     updateFruitingState() {
         // Apple Fruiting State
         if(this.plantType === "apple" && this.waterReserve > 0 && this.waterReserve < 3 && age > 15 && this.fruitingState === "green" && this.blight === null) {
@@ -243,12 +239,14 @@ class Plant {
         }
     }
 
+    // do blight effect of cell here
     blightEffects(blight) {
         if(blight === this.plantType) {
             this.blight = blight
         }
     }
 
+    // do change color of cell here
     decrementFruitColor() {
         if(this.fruitingState === "red") {
             this.fruitingState = "green"
@@ -276,10 +274,16 @@ class Plot {
         this.y = y;
         this.plant = null;
         this.hasPlot = false;
+        this.taskDone = null;
     }
 
-    placePlot() {
-        this.hasPlot = true;
+    doPlitTask(task) {
+        if(task.taskName === "place plot") {
+            this.hasPlot = true;
+        }
+        if(task.taskName === "plant seed") {
+            this.plant= task.equipment;
+        }
     }
 
     // call this when farmzoid plants a seed
@@ -301,7 +305,9 @@ plotLocations   : list of coords of valid plots
 *******************************************************************************************************************/
 class Farmzoid {
     constructor(x, y, color) {
-        this.taskNum = 0;
+        this.taskDone = 0;   // up to 50 tasks
+        this.task = null;
+        this.taskCompleted = false;
         this.equipment = null;
         this.x = x;
         this.y = y;
@@ -309,6 +315,19 @@ class Farmzoid {
         this.barnY = 19;
         this.color = color;
         this.plotLocations = plotLocations;
+    }
+
+    setTask(task) {
+        this.task = task;
+    }
+
+    doTask(currPlot) {
+        if(currPlot.x === this.x && currPlot.y === this.y && currPlot.plant != null) {
+            currPlot.doPlotTask();
+        }
+        if(currPlot.x === this.x && currPlot.y === this.y && currPlot.plant == null) {
+            currPlot.plant.doPlantTask();
+        }
     }
 }
 
@@ -366,7 +385,7 @@ day             : Keeps track of the day
 *******************************************************************************************************************/
 class FMS {
     constructor(dayCount) {
-        this.taskList = null;
+        this.taskList = [];
         this.taskCount = 0;
         this.day = dayCount;
     }
@@ -383,6 +402,14 @@ class FMS {
     }
 }
 
+class Task {
+    constructor(taskName, plotLocation, equipment) {
+        this.taskName = taskName;
+        this.plotLocation = plotLocation;
+        this.equipment = equipment;
+    }
+}
+
 /******************************************************************************************************************
 WorkingMem Class -- sets up rules and nature effects
 -------------------------------------------------------------------------------------------------------------------
@@ -394,6 +421,7 @@ farmzoid        : List of 4 bots
 class WorkingMem{
     constructor(nature, fms, validPlots) {
         this.validPlots = validPlots; 
+        console.log(validPlots);
         this.nature = nature;
         this.fms = fms;
         this.farmzoid = [new Farmzoid(21, 19), new Farmzoid(17, 19), new Farmzoid(19, 21), new Farmzoid(19, 17)];
@@ -419,6 +447,7 @@ class WorkingMem{
             }
             if(validPlots[i].plant.fruitingState === "black" && validPlots[i].plant.age == validPlots[i].plant.age + 2) {
                 validPlots[i].plant.plantType = null;
+                // change back to empty plot
                 console.log("plant is now dead after 2 days of fruit being black")
             }
             if(validPlots[i].plant.blight != null) {
@@ -430,28 +459,27 @@ class WorkingMem{
     setupTasks() {
         for(let i = 0; i < 20; i++) {
             if(validPlots[i].hasPlot === null){
-                fms.addTasks("place plot")
+                fms.addTasks(new Task("place plot", validPlots[i], "plot equipment"))
             }
             if(validPlots[i].plant.plantType === null) {
-                fms.addTasks("plant seed");
+                fms.addTasks(new Task("plant seed", validPlots[i], "apple"));
             }
             if(validPlots[i].plant.fertilized === false){
-                fms.addTasks("fertilize");
+                fms.addTasks(new Task("fertilize", validPlots[i], "fertilizer"));
             }
             if(validPlots[i].plant.fertilized === true && validPlots[i].plant.waterReserve <= 3) {
-                fms.addTasks("water");
+                fms.addTasks(new Task("watering", validPlots[i], "water"));
             }
             if(validPlots[i].plant.blight != null) {
-                fms.addTasks("soaping");
+                fms.addTasks(new Task("soaping", validPLots[i], "soap"));
             }
             if(validPlots[i].plant.fruitingState === "red" && validPlots[i].plant.waterReserve > 0 && validPlots[i].plant.waterReserve <=3) {
-                fms.addTasks("harvest");
+                fms.addTasks(new Task("harvest", validPlots[i], "barrel"));
             }
         }
     }
 }
 // End of Farm Objects
-
 
 // Farm Methods
 

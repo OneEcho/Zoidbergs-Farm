@@ -77,7 +77,7 @@ function draw_grid( rminor, rmajor)
     rect(11* sz, 13 * sz, sz, sz) // plot 3 at 11, 13
     rect(11* sz, 10 * sz, sz, sz) // plot 4 at 11, 10
 
-    rect(15* sz, 10 * sz, sz, sz) // plot 5 at 8, 13
+    rect(15* sz, 10 * sz, sz, sz) // plot 5 at 15, 10
     rect(15* sz, 13 * sz, sz, sz) // plot 6 at 15, 13
     rect(18* sz, 13 * sz, sz, sz) // plot 7 at 18, 13
     rect(18* sz, 10 * sz, sz, sz) // plot 8 at 18, 10
@@ -92,9 +92,9 @@ function draw_grid( rminor, rmajor)
     rect(29* sz, 13 * sz, sz, sz) // plot 15 at 29, 13
     rect(32* sz, 13 * sz, sz, sz) // plot 16 at 32, 13
 
-    rect(29* sz, 16 * sz, sz, sz)
-    rect(32* sz, 16 * sz, sz, sz)
-    rect(29* sz, 19 * sz, sz, sz)
-    rect(32* sz, 19 * sz, sz, sz)
+    rect(29* sz, 16 * sz, sz, sz) // plot 29, 16
+    rect(32* sz, 16 * sz, sz, sz) // plot 32, 16
+    rect(29* sz, 19 * sz, sz, sz) // plot 29, 19
+    rect(32* sz, 19 * sz, sz, sz) // plot 32, 19
 
 }
