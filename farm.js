@@ -320,12 +320,18 @@ class Farmzoid {
         this.task = task;
     }
 
-    doTask(currPlot) {
-        if(currPlot.x === this.x && currPlot.y === this.y && currPlot.plant != null) {
+    grabTask(task) {
+        if(this.x && this.y === this.barnX && this.barnY){
+            this.task = task;
+        }
+    }
+
+    doTask(plantPlot) {
+        if(plantPlot.x === this.x && plantPlot.y === this.y && plantPlot.plant != null) {
             currPlot.doPlotTask();
         }
-        if(currPlot.x === this.x && currPlot.y === this.y && currPlot.plant == null) {
-            currPlot.plant.doPlantTask();
+        if(platPlot.x === this.x && plantPlot.y === this.y && plantPlot.plant == null) {
+            plantPlot.plant.doPlantTask();
         }
     }
 }
