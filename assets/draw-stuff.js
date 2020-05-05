@@ -73,7 +73,11 @@ class Cell {
 
     // Different functions for farmzoids 1-4?
     show_farmzoids() {
-
+        let y = this.col * g_canvas.cell_size;
+        let x = this.row * g_canvas.cell_size;
+        stroke(255);
+        fill("orange");
+        rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
     }
 }
 

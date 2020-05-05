@@ -636,8 +636,11 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
     for(let i = 0; i < zoids.length; i++) {
         console.log("trying to move zoids");
         var cZoid = zoids[i];
-        console.log("cZoid: " + i + " X: " + cZoid.x++ + "Y: " + cZoid.y++);
+        console.log(cZoid.x + " " + cZoid.y);
+        console.log("cZoid: " + i + " X: " + cZoid.x++ + " Y: " + cZoid.y++);
         cZoid.moveZoid(cZoid.x++,cZoid.y++);
+        // idk here
+        grid[index(cZoid.x, cZoid.y)].show_farmzoids();
     }
 }
 
