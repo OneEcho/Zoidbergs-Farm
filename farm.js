@@ -344,6 +344,12 @@ class Farmzoid {
             plantPlot.plant.doPlantTask();
         }
     }
+
+    moveZoid(xx,yy) {
+        this.x = xx;
+        this.y = yy;
+        this.color = "orange";
+    }
 }
 
 /*******************************************************************************************************************
@@ -533,6 +539,8 @@ var farmzoidTwo = new Farmzoid(17, 19, "blue");
 var farmzoidThree = new Farmzoid(19, 21, "pink");
 var farmzoidFour = new Farmzoid(19, 17, "yellow");
 
+var zoids = [farmzoidOne, farmzoidTwo, farmzoidThree, farmzoidFour];
+
 var cols, rows;
 
 // End of Farm Methods
@@ -624,6 +632,13 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
     workingmem.natureEffects();
     workingmem.setupTasks();
     console.log(workingmem.fms.taskList);
+
+    for(let i = 0; i < zoids.length; i++) {
+        console.log("trying to move zoids");
+        var cZoid = zoids[i];
+        console.log("cZoid: " + i + " X: " + cZoid.x++ + "Y: " + cZoid.y++);
+        cZoid.moveZoid(cZoid.x++,cZoid.y++);
+    }
 }
 
 
