@@ -24,9 +24,6 @@ let plotLocations = [
     [32, 19]    // plot 20
 ];
 
-let riverLocation = [{start_x: 15, start_y: 25}, 
-                    {end_x: 15, end_y: 38}];
-
 // random type of blight shuffler
 function shuffleBlight(array) {
     var currentIndex = array.length, temporaryValue, randomIndex;
@@ -46,6 +43,15 @@ function shuffleBlight(array) {
   
     return array;
   }
+
+// call to change day, and also check to see if the growing season has ended
+function dayCounter(dayCount) {
+    dayCount = dayCount + 1;
+
+    if( dayCount == 41){
+        // growing season ends
+    }
+}
 
 /*******************************************************************************************************************
  Nature Class -- defines nature effects
@@ -73,36 +79,37 @@ class Nature {
     }
 
     randCloudy() { 
-        console.log("Rolling for clouds");
+        console.log("randCloudy()");
         let rng = Math.floor((Math.random() * 10) + 1);  // 1 - 10, 10% chance of being cloudy
         if(rng === 1) {
-            console.log("Sky is cloudy");
+            console.log("\tSky is cloudy");
             this.sky = "cloudy";
 
             rng = Math.floor((Math.random() * 10) + 1);  // 1 - 10, 50% chance of raining when cloudy
             if(rng <= 5) {
-                console.log("Sky is rainy");
+                console.log("\tSky is rainy");
                 this.sky = "rainy";
                 return "rainy";
             }
 
             return "cloudy";
         }
+        this.sky = clear;
         return false;
     }
 
         
     randBlight() {
-        console.log("Rolling for blight");
+        console.log("randBlight()");
         let blight_chance = Math.floor((Math.random() * 10) + 1);  // 1 - 10, 2% chance of having blight and stalling growth
         var blightType = ["corn", "berry", "apple"];
         shuffleBlight(blightType);
         if(blight_chance === 1 || blight_chance === 2) {    
-            console.log("Blight occurred");
+            console.log("\tBlight occurred");
             this.blight = blightType[0];
         }
         else {
-            console.log("Blight didnt occur");
+            console.log("\tBlight didnt occur");
         }
     }
 }
@@ -201,19 +208,19 @@ class Plant {
         }
 
         // Corn growth cycle
-        if(this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve <= 3 && age > 1 && this.growthCycle === "seed" && this.blight === null) {
+        if(this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 1 && this.growthCycle === "seed" && this.blight === null) {
             this.growthCycle = "stalk"
             console.log("corn seed is now stalk")
         }
-        if(this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve <= 3 && age > 3 && this.growthCycle === "stalk" && this.blight === null) {
+        if(this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 3 && this.growthCycle === "stalk" && this.blight === null) {
             this.growthCycle = "bush"
             console.log("corn stalk is now bush")
         }
-        if(this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve <= 3 && age > 5 && this.growthCycle === "bush" && this.blight === null) {
+        if(this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 5 && this.growthCycle === "bush" && this.blight === null) {
             this.growthCycle = "flower"
             console.log("corn bush is now flower")
         }
-        if(this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve <= 3 && age > 7 && this.growthCycle === "flower" && this.blight === null) {
+        if(this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 7 && this.growthCycle === "flower" && this.blight === null) {
             this.growthCycle = "fruiting"
             this.fruitingState = "green"
             console.log("corn flower is now fruiting")
@@ -223,19 +230,19 @@ class Plant {
     // do fruit color change here
     updateFruitingState() {
         // Apple Fruiting State
-        if(this.plantType === "apple" && this.waterReserve > 0 && this.waterReserve < 3 && age > 15 && this.fruitingState === "green" && this.blight === null) {
+        if(this.plantType === "apple" && this.waterReserve > 0 && this.waterReserve < 3 && this.age > 15 && this.fruitingState === "green" && this.blight === null) {
             this.fruitingState = "red"
             console.log("apple is now harvestable")
         }
 
         // Berry fruitying state
-        if(this.plantType === "berry" && this.waterReserve > 0 && this.waterReserve < 3 && age > 11 && this.fruitingState === "green" && this.blight === null) {
+        if(this.plantType === "berry" && this.waterReserve > 0 && this.waterReserve < 3 && this.age > 11 && this.fruitingState === "green" && this.blight === null) {
             this.fruitingState = "red"
             console.log("berry is now harvestable")
         }
 
         // Corn fruiting state
-        if(this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve < 3 && age > 8 && this.fruitingState === "green" && this.blight === null) {
+        if(this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve < 3 && this.age > 8 && this.fruitingState === "green" && this.blight === null) {
             this.fruitingState = "red"
             console.log("corn is now harvestable")
         }
@@ -444,6 +451,7 @@ class WorkingMem{
     }
 
     natureEffects() {
+        console.log("natureEffects()");
         nature.updateWeather();
         for(let i = 0; i < 20; i++) {
             if(validPlots[i].plant != null) {
@@ -452,15 +460,15 @@ class WorkingMem{
                 validPlots[i].plant.updateFruitingState();
                 if(nature.sky === "clear" && validPlots[i].plant.waterReserve > 0) {
                     validPlots[i].plant.waterReserve--;
-                    console.log(" day was clear, dec water");
+                    console.log("\tday was clear, dec water");
                 }
                 if(nature.sky === "rainy") {
                     validPlots[i].plant.waterReserve++;
-                    console.log("day was rainy, inc water");
+                    console.log("\tday was rainy, inc water");
                 }
                 if(nature.sky === "cloudy") {
                     validPlots[i].plant.decrementAge();
-                    console.log("day was cloudy, stall ageing")
+                    console.log("\tday was cloudy, stall ageing")
                 }
                 if(validPlots[i].plant.waterReserve === 0) {
                     validPlots[i].plant.decrementFruitColor();
@@ -468,7 +476,7 @@ class WorkingMem{
                 if(validPlots[i].plant.fruitingState === "black" && validPlots[i].plant.age == validPlots[i].plant.age + 2) {
                     validPlots[i].plant.plantType = null;
                     // change back to empty plot
-                    console.log("plant is now dead after 2 days of fruit being black")
+                    console.log("\tplant is now dead after 2 days of fruit being black")
                 }
                 if(validPlots[i].plant.blight != null) {
                     validPlots[i].plant.blightEffects(nature.blight);
@@ -487,7 +495,12 @@ class WorkingMem{
 }
 // End of Farm Objects
 
-// Farm Methods
+
+/*******************************************************************************************************************
+ 
+    Global Variables
+
+*******************************************************************************************************************/
 
 // set validPlots
 let validPlots =    [new Plot(plotLocations[0][0], plotLocations[0][1]), 
@@ -509,40 +522,25 @@ let validPlots =    [new Plot(plotLocations[0][0], plotLocations[0][1]),
                      new Plot(plotLocations[16][0], plotLocations[16][1]),
                      new Plot(plotLocations[17][0], plotLocations[17][1]),
                      new Plot(plotLocations[18][0], plotLocations[18][1]),
-                     new Plot(plotLocations[19][0], plotLocations[19][1]),];
-
-
-// call to change day, and also check to see if the growing season has ended
-function dayCounter(dayCount) {
-    dayCount = dayCount + 1;
-
-    if( dayCount == 41){
-        // growing season ends
-    }
-}
+                     new Plot(plotLocations[19][0], plotLocations[19][1])];
 
 var nature = new Nature();
 var fms = new FMS(1);
 var workingmem = new WorkingMem(nature, fms, validPlots);
-workingmem.natureEffects();
-workingmem.setupTasks();
-console.log(workingmem.fms.taskList);
 
 var farmzoidOne = new Farmzoid(21, 19, "green");
 var farmzoidTwo = new Farmzoid(17, 19, "blue");
 var farmzoidThree = new Farmzoid(19, 21, "pink");
 var farmzoidFour = new Farmzoid(19, 17, "yellow");
 
-
 var cols, rows;
-// nature.randCloudy();
-// nature.randBlight();
-// console.log(nature.blight);
 
 // End of Farm Methods
 
 /*******************************************************************************************************************
-Bot Movement
+ 
+    Bot Movement
+
 *******************************************************************************************************************/
 // Make global g_canvas JS 'object': a key-value 'dictionary'.
 var g_canvas; // JS Global var, w canvas size info.
@@ -552,14 +550,13 @@ var g_stop; // Go by default.
 var g_cnv;   // To hold a P5 canvas.
 var g_button; // btn
 var g_button2; // btn
-
 var g_l4job = { id:1 }; // Put Lisp stuff for JS-to-access in ob; id to make ob.
 var grid = [];
+var count = 0;
 
 function setup() // P5 Setup Fcn
 {
-    
-    console.log( " ===== setup() =====");
+    console.log( "setup()");
     g_canvas = { cell_size:20, wid:40, hgt:40 };
     g_frame_cnt = 0; // Setup a P5 display-frame counter, to do anim
     g_frame_mod = 24; // Update ever 'mod' frames.
@@ -573,7 +570,7 @@ function setup() // P5 Setup Fcn
     rows = floor(height/sz)
 
     g_cnv = createCanvas( width, height );  // Make a P5 canvas.
-    console.log( "createCanvas()" );
+    console.log("\tcreateCanvas()" );
 
     for(let i = 0; i < rows; i++) {
         for(let j = 0; j < cols; j++) {
@@ -582,20 +579,20 @@ function setup() // P5 Setup Fcn
         }
     }
 
-    //background('tan')
-    //draw_grid( 20, 50);
-    do_btn( ); // 
 
-    console.log( " ===== setup() =====");
+    // Change framerate speed
+    frameRate(0.5)
+
+    do_btn( ); 
 }
 
-var count = 0;
 // Main farm loop?
 function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
 {
     console.log("draw()");
     count++;
-    //console.log("count++" + count);
+    console.log("count = " + count);
+
     // Color the dirt
     for(let i = 0; i < grid.length; i++) {
         grid[i].show_dirt();
@@ -622,8 +619,21 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
 
     // Color barn
     grid[index(19, 19)].show_barn();
+
+    // Update daily nature changes
+    workingmem.natureEffects();
+    workingmem.setupTasks();
+    console.log(workingmem.fms.taskList);
 }
 
+
+
+
+/*******************************************************************************************************************
+
+    RANDOM FUNCTIONS
+
+*******************************************************************************************************************/
 function do_btn( )
 { // grab code from csu\assets\js\js+p5+editbox
 

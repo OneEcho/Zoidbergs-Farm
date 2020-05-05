@@ -71,8 +71,9 @@ class Cell {
         rect(12*sz, 35*sz, sz, sz)
     }
 
+    // Different functions for farmzoids 1-4?
     show_farmzoids() {
-        
+
     }
 }
 
