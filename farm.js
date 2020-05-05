@@ -24,6 +24,9 @@ let plotLocations = [
     [32, 19]    // plot 20
 ];
 
+let riverLocation = [{start_x: 15, start_y: 25}, 
+                    {end_x: 15, end_y: 38}];
+
 // random type of blight shuffler
 function shuffleBlight(array) {
     var currentIndex = array.length, temporaryValue, randomIndex;
@@ -271,7 +274,7 @@ class Plot {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.plant = null;
+        this.plant = new Plant();
         this.hasPlot = false;
         this.taskDone = null;
     }
@@ -530,6 +533,8 @@ var farmzoidTwo = new Farmzoid(17, 19, "blue");
 var farmzoidThree = new Farmzoid(19, 21, "pink");
 var farmzoidFour = new Farmzoid(19, 17, "yellow");
 
+
+var cols, rows;
 // nature.randCloudy();
 // nature.randBlight();
 // console.log(nature.blight);
@@ -549,6 +554,75 @@ var g_button; // btn
 var g_button2; // btn
 
 var g_l4job = { id:1 }; // Put Lisp stuff for JS-to-access in ob; id to make ob.
+var grid = [];
+
+function setup() // P5 Setup Fcn
+{
+    
+    console.log( " ===== setup() =====");
+    g_canvas = { cell_size:20, wid:40, hgt:40 };
+    g_frame_cnt = 0; // Setup a P5 display-frame counter, to do anim
+    g_frame_mod = 24; // Update ever 'mod' frames.
+    g_stop = 0;     // Go by default.
+
+    let sz = g_canvas.cell_size;
+    let width = sz * g_canvas.wid;  // Our 'canvas' uses cells of given size, not 1x1.
+    let height = sz * g_canvas.hgt;
+
+    cols = floor(width/sz)
+    rows = floor(height/sz)
+
+    g_cnv = createCanvas( width, height );  // Make a P5 canvas.
+    console.log( "createCanvas()" );
+
+    for(let i = 0; i < rows; i++) {
+        for(let j = 0; j < cols; j++) {
+            let cell = new Cell(i, j);  // Create new cell with x, y coords
+            grid.push(cell);            // Push into list
+        }
+    }
+
+    //background('tan')
+    //draw_grid( 20, 50);
+    do_btn( ); // 
+
+    console.log( " ===== setup() =====");
+}
+
+var count = 0;
+// Main farm loop?
+function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
+{
+    console.log("draw()");
+    count++;
+    //console.log("count++" + count);
+    // Color the dirt
+    for(let i = 0; i < grid.length; i++) {
+        grid[i].show_dirt();
+    }
+    
+    // Color the plots
+    for(let i = 0; i < plotLocations.length; i++) {
+        let x = plotLocations[i][1];
+        let y = plotLocations[i][0];
+        grid[index(x, y)].show_plots();
+    }
+
+    // Color river
+    grid[0].show_river();
+
+    // Color cave
+    for(let x = 14; x < 19; x++)
+    {
+        for(let y = 26; y < 30; y++)
+        {
+            grid[index(x, y)].show_cave();
+        }
+    }
+
+    // Color barn
+    grid[index(19, 19)].show_barn();
+}
 
 function do_btn( )
 { // grab code from csu\assets\js\js+p5+editbox
@@ -571,28 +645,6 @@ function save_image( ) // btn
     save('myCanvas-' + g_frame_cnt +  '.jpg');
 }
 
-function setup() // P5 Setup Fcn
-{
-    
-    console.log( "Beg P5 setup =====");
-    console.log( "@: log says hello from P5 setup()." );
-    g_canvas = { cell_size:20, wid:40, hgt:40 };
-    g_frame_cnt = 0; // Setup a P5 display-frame counter, to do anim
-    g_frame_mod = 24; // Update ever 'mod' frames.
-    g_stop = 0; // Go by default.
-
-    let sz = g_canvas.cell_size;
-    let width = sz * g_canvas.wid;  // Our 'canvas' uses cells of given size, not 1x1.
-    let height = sz * g_canvas.hgt;
-    g_cnv = createCanvas( width, height );  // Make a P5 canvas.
-    background('tan')
-    console.log( "@: createCanvas()." );
-    draw_grid( 20, 50);
-    do_btn( ); // 
-
-    console.log( "End P5 setup =====");
-}
-
 var g_box = { t:1, hgt:47, l:1, wid:63 }; // Box in which bot can move.
 
 function csjs_get_pixel_color_sum( rx, ry )
@@ -603,21 +655,6 @@ function csjs_get_pixel_color_sum( rx, ry )
     return sum;
 }
 
-function draw_update()  // Update our display.
-{
-    console.log( "Call g_l4job.draw_fn" );
-    g_l4job.draw_fn();
-}
-
-function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
-{
-    ++g_frame_cnt;
-    if (0 == g_frame_cnt % g_frame_mod)
-    {
-        console.log( "g_frame_cnt = " + g_frame_cnt );
-        if (!g_stop) draw_update();
-    }
-}
 
 function keyPressed( )
 {
