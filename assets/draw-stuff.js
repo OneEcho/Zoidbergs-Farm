@@ -22,7 +22,7 @@ class Cell {
         stroke(255);
         fill('tan');
         rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
-        this.obstacle = false;
+        this.color = "dirt";
     }
 
     show_plots() {
@@ -31,6 +31,7 @@ class Cell {
         stroke(255);
         fill('peru');
         rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
+        this.color = "plot";
     }
 
     show_cave() {
@@ -38,6 +39,7 @@ class Cell {
         let x = this.row * g_canvas.cell_size;
         fill('black')
         rect(x, y, g_canvas.cell_size, g_canvas.cell_size);
+        this.color = "cave"
         this.obstacle = true;
     }
 
@@ -47,6 +49,7 @@ class Cell {
         stroke(255);
         fill('DarkRed')
         rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
+        this.colr = "barn";
     }
 
     show_river() {

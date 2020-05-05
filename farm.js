@@ -24,32 +24,13 @@ let plotLocations = [
     [32, 19]    // plot 20
 ];
 
-// random type of blight shuffler
-function shuffleBlight(array) {
-    var currentIndex = array.length, temporaryValue, randomIndex;
-  
-    // While there remain elements to shuffle...
-    while (0 !== currentIndex) {
-  
-      // Pick a remaining element...
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex -= 1;
-  
-      // And swap it with the current element.
-      temporaryValue = array[currentIndex];
-      array[currentIndex] = array[randomIndex];
-      array[randomIndex] = temporaryValue;
-    }
-  
-    return array;
-  }
-
 // call to change day, and also check to see if the growing season has ended
 function dayCounter(dayCount) {
     dayCount = dayCount + 1;
 
+    // growing season ends
     if( dayCount == 41){
-        // growing season ends
+        alert("I am an alert box!");
     }
 }
 
@@ -67,7 +48,6 @@ class Nature {
     constructor() {
         this.sky = "clear"; 
         this.wind = "N";
-        this.dayCount = 0;
         this.temperature = "warm";
         this.blight = null;
         this.moveCounter = 0;
@@ -101,16 +81,16 @@ class Nature {
         
     randBlight() {
         console.log("randBlight()");
-        let blight_chance = Math.floor((Math.random() * 10) + 1);  // 1 - 10, 2% chance of having blight and stalling growth
+        let rng = Math.floor((Math.random() * 10) + 1);  // 1 - 10, 2% chance of having blight and stalling growth
         var blightType = ["corn", "berry", "apple"];
-        shuffleBlight(blightType);
-        if(blight_chance === 1 || blight_chance === 2) {    
-            console.log("\tBlight occurred");
-            this.blight = blightType[0];
+
+        if(rng <= 2) {    
+            this.blight = blightType[Math.floor(Math.random() * blightType.length)];
+            console.log("\tBlight occurred for " + this.blight);
+            return this.blight;
         }
-        else {
-            console.log("\tBlight didnt occur");
-        }
+
+        return false;
     }
 }
 
@@ -344,12 +324,6 @@ class Farmzoid {
             plantPlot.plant.doPlantTask();
         }
     }
-
-    moveZoid(xx,yy) {
-        this.x = xx;
-        this.y = yy;
-        this.color = "orange";
-    }
 }
 
 /*******************************************************************************************************************
@@ -412,13 +386,25 @@ class FMS {
     }
 
     addTasks(task) {
-        this.taskList.push(task);
-        this.taskCount++;
+        if(this.taskCount <= 200) {
+            this.taskList.push(task);
+            this.taskCount++;
+        }
+        else {
+            this.checkNewDay();
+        }
     }
 
-    newDay() {
+    checkNewDay() {
         if(this.taskCount === 200) {
-            dayCount++;
+            console.log("Task count is 200 ... Starting new day");
+            this.taskList.clear;
+            this.taskCount = 0;
+
+            if(this.day <= 40) { 
+                alert("Day 40 reached!");
+            }
+            this.day++;
         }
     }
 }
@@ -453,12 +439,13 @@ class WorkingMem{
         console.log(validPlots);
         this.nature = nature;
         this.fms = fms;
-        this.farmzoid = [new Farmzoid(21, 19), new Farmzoid(17, 19), new Farmzoid(19, 21), new Farmzoid(19, 17)];
+        this.farmzoids = [new Farmzoid(21, 19), new Farmzoid(17, 19), new Farmzoid(19, 21), new Farmzoid(19, 17)];
     }
 
     natureEffects() {
         console.log("natureEffects()");
         nature.updateWeather();
+
         for(let i = 0; i < 20; i++) {
             if(validPlots[i].plant != null) {
                 validPlots[i].plant.incrementAge();
@@ -539,8 +526,6 @@ var farmzoidTwo = new Farmzoid(17, 19, "blue");
 var farmzoidThree = new Farmzoid(19, 21, "pink");
 var farmzoidFour = new Farmzoid(19, 17, "yellow");
 
-var zoids = [farmzoidOne, farmzoidTwo, farmzoidThree, farmzoidFour];
-
 var cols, rows;
 
 // End of Farm Methods
@@ -599,7 +584,7 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
 {
     console.log("draw()");
     count++;
-    console.log("count = " + count);
+    console.log("frame = " + count);
 
     // Color the dirt
     for(let i = 0; i < grid.length; i++) {
@@ -617,10 +602,8 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
     grid[0].show_river();
 
     // Color cave
-    for(let x = 14; x < 19; x++)
-    {
-        for(let y = 26; y < 30; y++)
-        {
+    for(let x = 14; x < 19; x++) {
+        for(let y = 26; y < 30; y++) {
             grid[index(x, y)].show_cave();
         }
     }
@@ -631,17 +614,8 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
     // Update daily nature changes
     workingmem.natureEffects();
     workingmem.setupTasks();
+    workingmem.fms.checkNewDay();
     console.log(workingmem.fms.taskList);
-
-    for(let i = 0; i < zoids.length; i++) {
-        console.log("trying to move zoids");
-        var cZoid = zoids[i];
-        console.log(cZoid.x + " " + cZoid.y);
-        console.log("cZoid: " + i + " X: " + cZoid.x++ + " Y: " + cZoid.y++);
-        cZoid.moveZoid(cZoid.x++,cZoid.y++);
-        // idk here
-        grid[index(cZoid.x, cZoid.y)].show_farmzoids();
-    }
 }
 
 
