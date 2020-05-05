@@ -6,95 +6,88 @@
 // Draw a fancy grid with major & minor lines 
 // & major row/col numbers.
 
-
-
-function draw_grid( rminor, rmajor) 
-{
-    stroke( "gray" );
-    fill( "gray" );
-    let sz = g_canvas.cell_size;
-    let width = g_canvas.wid*sz;
-    let height = g_canvas.hgt*sz;
-    let zz = sz - 2;
-    for ( var ix = 0; ix < width; ix += rminor )
-    {
-        let big_linep = (ix % rmajor == 0);
-        let line_wgt = 1;
-        // if (big_linep) line_wgt = 2;
-        strokeWeight( line_wgt );
-        line( ix, 0, ix, height );
-        strokeWeight( 1 );
-    }
-    for ( var iy = 0; iy < height; iy += rminor )
-    {
-        let big_linep = (iy % rmajor == 0);
-        let line_wgt = 1;
-        // if (big_linep) line_wgt = 2;
-        strokeWeight( line_wgt );
-        line( 0, iy, width, iy );
-        strokeWeight( 1 );
+// Cell object
+class Cell {
+    constructor(row, col) {
+        this.row = row;             // Row number
+        this.col = col;             // Col number
+        this.color = "";            // Color of cell (red, black, purple...)
+        this.obstacle = false;
     }
 
+    // Fill cells
+    show_dirt() {
+        let y = this.col * g_canvas.cell_size;
+        let x = this.row * g_canvas.cell_size;
+        stroke(255);
+        fill('tan');
+        rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
+        this.obstacle = false;
+    }
 
-    // Draws the river
-    fill('blue');
-    var iy = 25
-    for(var ix = 1; ix <= 15; ix += 1)
-    {
-        if(ix < 16 && iy < 39)
+    show_plots() {
+        let y = this.col * g_canvas.cell_size;
+        let x = this.row * g_canvas.cell_size;
+        stroke(255);
+        fill('peru');
+        rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
+    }
+
+    show_cave() {
+        let y = this.col * g_canvas.cell_size;
+        let x = this.row * g_canvas.cell_size;
+        fill('black')
+        rect(x, y, g_canvas.cell_size, g_canvas.cell_size);
+        this.obstacle = true;
+    }
+
+    show_barn() {
+        let y = this.col * g_canvas.cell_size;
+        let x = this.row * g_canvas.cell_size;
+        stroke(255);
+        fill('DarkRed')
+        rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
+    }
+
+    show_river() {
+        let sz = g_canvas.cell_size;
+        fill('blue');
+        stroke(255);
+        var iy = 25
+        for(var ix = 1; ix <= 15; ix++)
         {
-            rect(ix*sz, iy*sz, sz, sz);
-            rect((ix + 1)*sz, iy*sz, sz, sz)
-            iy += 1;
+            if(ix < 16 && iy < 39)
+            {
+                rect(ix*sz, iy*sz, sz, sz);
+                rect((ix + 1)*sz, iy*sz, sz, sz)
+                iy += 1;
+            }
         }
+
+        fill('grey')
+        rect(6*sz, 30*sz, sz, sz)
+        rect(7*sz, 30*sz, sz, sz)
+        rect(11*sz, 35*sz, sz, sz)
+        rect(12*sz, 35*sz, sz, sz)
     }
 
-    // Draws the bridges
-    fill('tan')
-    rect(6*sz, 30*sz, sz, sz)
-    rect(7*sz, 30*sz, sz, sz)
-    rect(11*sz, 35*sz, sz, sz)
-    rect(12*sz, 35*sz, sz, sz)
+    // Different functions for farmzoids 1-4?
+    show_farmzoids() {
+        let y = this.col * g_canvas.cell_size;
+        let x = this.row * g_canvas.cell_size;
+        stroke(255);
+        fill("orange");
+        rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
+    }
+}
 
-    // Draw the Barn
-    fill('DarkRed')
-    rect(19 * sz , 19 * sz, sz, sz)
-
-    // Draw the cave
-    fill('black')
-    for(var x = 14; x < 19; x += 1)
-    {
-        for(var y = 26; y < 30; y += 1)
-        {
-            rect(x * sz, y * sz, sz, sz)
-        }
+// Return 2D coords into 1D index
+function index(i, j) {
+    // Check out of bounds
+    if (i < 0 || j < 0 || j > cols-1 || i > rows -1) {
+        return false;
     }
 
-    // Draw the plots
-    fill('peru')
-    rect(8 * sz, 13 * sz, sz, sz) // plot 1 at 8, 13
-    rect(8 * sz, 10 * sz, sz, sz) // plot 2 at 8, 10
-    rect(11* sz, 13 * sz, sz, sz) // plot 3 at 11, 13
-    rect(11* sz, 10 * sz, sz, sz) // plot 4 at 11, 10
-
-    rect(15* sz, 10 * sz, sz, sz) // plot 5 at 15, 10
-    rect(15* sz, 13 * sz, sz, sz) // plot 6 at 15, 13
-    rect(18* sz, 13 * sz, sz, sz) // plot 7 at 18, 13
-    rect(18* sz, 10 * sz, sz, sz) // plot 8 at 18, 10
-
-    rect(22* sz, 10 * sz, sz, sz) // plot 9 at 22, 10
-    rect(25* sz, 10 * sz, sz, sz) // plot 10 at 25, 10
-    rect(22* sz, 13 * sz, sz, sz) // plot 11 at 22, 13
-    rect(25* sz, 13 * sz, sz, sz) // plot 12 at 25, 13
-
-    rect(29* sz, 10 * sz, sz, sz) // plot 13 at 29, 10
-    rect(32* sz, 10 * sz, sz, sz) // plot 14 at 32, 10
-    rect(29* sz, 13 * sz, sz, sz) // plot 15 at 29, 13
-    rect(32* sz, 13 * sz, sz, sz) // plot 16 at 32, 13
-
-    rect(29* sz, 16 * sz, sz, sz) // plot 29, 16
-    rect(32* sz, 16 * sz, sz, sz) // plot 32, 16
-    rect(29* sz, 19 * sz, sz, sz) // plot 29, 19
-    rect(32* sz, 19 * sz, sz, sz) // plot 32, 19
-
+    //cols = 37
+    return j + i * cols;
 }
