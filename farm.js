@@ -523,11 +523,6 @@ var nature = new Nature();
 var fms = new FMS(1);
 var workingmem = new WorkingMem(nature, fms, validPlots);
 
-var farmzoidOne = new Farmzoid(21, 19, "green");
-var farmzoidTwo = new Farmzoid(17, 19, "blue");
-var farmzoidThree = new Farmzoid(19, 21, "pink");
-var farmzoidFour = new Farmzoid(19, 17, "yellow");
-
 var cols, rows;
 
 // End of Farm Methods
