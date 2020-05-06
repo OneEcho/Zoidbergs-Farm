@@ -49,7 +49,7 @@ class Cell {
         stroke(255);
         fill('DarkRed')
         rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
-        this.colr = "barn";
+        this.color = "barn";
     }
 
     show_river() {
@@ -75,11 +75,11 @@ class Cell {
     }
 
     // Different functions for farmzoids 1-4?
-    show_farmzoids() {
+    show_farmzoids(color) {
         let y = this.col * g_canvas.cell_size;
         let x = this.row * g_canvas.cell_size;
         stroke(255);
-        fill("orange");
+        fill(color);
         rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
     }
 }

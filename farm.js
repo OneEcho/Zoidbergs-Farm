@@ -24,6 +24,8 @@ let plotLocations = [
     [32, 19]    // plot 20
 ];
 
+let barnLocation = {x: 19, y: 19};
+
 // call to change day, and also check to see if the growing season has ended
 function dayCounter(dayCount) {
     dayCount = dayCount + 1;
@@ -439,7 +441,7 @@ class WorkingMem{
         console.log(validPlots);
         this.nature = nature;
         this.fms = fms;
-        this.farmzoids = [new Farmzoid(21, 19), new Farmzoid(17, 19), new Farmzoid(19, 21), new Farmzoid(19, 17)];
+        this.farmzoids = [new Farmzoid(21, 19, "green"), new Farmzoid(17, 19, "blue"), new Farmzoid(19, 21, "pink"), new Farmzoid(19, 17, "yellow")];
     }
 
     natureEffects() {
@@ -545,7 +547,7 @@ var g_button; // btn
 var g_button2; // btn
 var g_l4job = { id:1 }; // Put Lisp stuff for JS-to-access in ob; id to make ob.
 var grid = [];
-var count = 0;
+var frameCounter = 0;
 
 function setup() // P5 Setup Fcn
 {
@@ -583,8 +585,8 @@ function setup() // P5 Setup Fcn
 function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
 {
     console.log("draw()");
-    count++;
-    console.log("frame = " + count);
+    console.log("frame = " + frameCounter);
+    frameCounter++;
 
     // Color the dirt
     for(let i = 0; i < grid.length; i++) {
@@ -608,8 +610,16 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
         }
     }
 
+    // Color farmzoids
+    for(let i = 0; i < workingmem.farmzoids.length; ++i) {
+        let x = workingmem.farmzoids[i].x;
+        let y = workingmem.farmzoids[i].y;
+        let color = workingmem.farmzoids[i].color;
+        grid[index(x, y)].show_farmzoids(color);
+    }
+
     // Color barn
-    grid[index(19, 19)].show_barn();
+    grid[index(barnLocation.x, barnLocation.y)].show_barn();
 
     // Update daily nature changes
     workingmem.natureEffects();
