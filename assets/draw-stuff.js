@@ -22,7 +22,7 @@ class Cell {
         stroke(255);
         fill('tan');
         rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
-        this.obstacle = false;
+        this.color = "dirt";
     }
 
     show_plots() {
@@ -31,6 +31,7 @@ class Cell {
         stroke(255);
         fill('peru');
         rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
+        this.color = "plot";
     }
 
     show_cave() {
@@ -38,6 +39,7 @@ class Cell {
         let x = this.row * g_canvas.cell_size;
         fill('black')
         rect(x, y, g_canvas.cell_size, g_canvas.cell_size);
+        this.color = "cave"
         this.obstacle = true;
     }
 
@@ -47,6 +49,7 @@ class Cell {
         stroke(255);
         fill('DarkRed')
         rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
+        this.color = "barn";
     }
 
     show_river() {
@@ -72,11 +75,11 @@ class Cell {
     }
 
     // Different functions for farmzoids 1-4?
-    show_farmzoids() {
+    show_farmzoids(color) {
         let y = this.col * g_canvas.cell_size;
         let x = this.row * g_canvas.cell_size;
         stroke(255);
-        fill("orange");
+        fill(color);
         rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
     }
 }
