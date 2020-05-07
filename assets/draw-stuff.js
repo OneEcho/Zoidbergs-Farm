@@ -12,7 +12,7 @@ class Cell {
         this.row = row;             // Row number
         this.col = col;             // Col number
         this.color = "";            // Color of cell (red, black, purple...)
-        this.obstacle = false;
+        this.isObstacle = false;
     }
 
     // Fill cells
@@ -23,6 +23,7 @@ class Cell {
         fill('tan');
         rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
         this.color = "dirt";
+        this.isObstacle = false;
     }
 
     show_plots() {
@@ -38,9 +39,9 @@ class Cell {
         let y = this.col * g_canvas.cell_size;
         let x = this.row * g_canvas.cell_size;
         fill('black')
-        rect(x, y, g_canvas.cell_size, g_canvas.cell_size);
+        rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
         this.color = "cave"
-        this.obstacle = true;
+        this.isObstacle = true;
     }
 
     show_barn() {
@@ -54,18 +55,11 @@ class Cell {
 
     show_river() {
         let sz = g_canvas.cell_size;
+        let x = this.col * g_canvas.cell_size;
+        let y = this.row * g_canvas.cell_size;
         fill('blue');
-        stroke(255);
-        var iy = 25
-        for(var ix = 1; ix <= 15; ix++)
-        {
-            if(ix < 16 && iy < 39)
-            {
-                rect(ix*sz, iy*sz, sz, sz);
-                rect((ix + 1)*sz, iy*sz, sz, sz)
-                iy += 1;
-            }
-        }
+        rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
+        this.isObstacle = true;
 
         fill('grey')
         rect(6*sz, 30*sz, sz, sz)
@@ -81,6 +75,7 @@ class Cell {
         stroke(255);
         fill(color);
         rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
+        this.isObstacle = true;
     }
 }
 

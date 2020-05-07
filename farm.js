@@ -1,7 +1,7 @@
 // farm.js
 // Farm objects
 
-let plotLocations = [
+const plotLocations = [
     [8, 13],    // plot 1
     [8, 10],    // plot 2
     [11, 13],   // plot 3
@@ -24,17 +24,14 @@ let plotLocations = [
     [32, 19]    // plot 20
 ];
 
-let barnLocation = {x: 19, y: 19};
+const barnLocation = {x: 19, y: 19};
 
-// call to change day, and also check to see if the growing season has ended
-function dayCounter(dayCount) {
-    dayCount = dayCount + 1;
+const plantStageColors = {
+    yellowPlantColor: "#d9cf14",
+    brownPlantColor: "#61390f",
+    deadPlantColor: "#0a0602"
+};
 
-    // growing season ends
-    if( dayCount == 41){
-        alert("I am an alert box!");
-    }
-}
 
 /*******************************************************************************************************************
  Nature Class -- defines nature effects
@@ -308,6 +305,11 @@ class Farmzoid {
         this.barnY = 19;
         this.color = color; // Color of the farmzoid
         this.plotLocations = plotLocations; // Know where the plot locations are
+
+        this.goal_row = null;
+        this.goal_col = null;
+        this.neighbors = [];
+        this.stack = [];
     }
 
     setTask(task) {
@@ -514,7 +516,7 @@ class WorkingMem{
             left        = grid[index(row, col-1)];      // 8
 
             // Check for move location, valid cell, and if it's not an obstacle
-            if(randomNum === 1 && topLeft && topLeft != "obstacle") // top left
+            if(randomNum === 1 && topLeft && !topLeft.isObstacle) // top left
             {
                 // console.log("Farmzoid # " + i + " moving top left");
                 // console.log("before : " + this.farmzoids[i].x + ", " + this.farmzoids[i].y);
@@ -522,40 +524,40 @@ class WorkingMem{
                 this.farmzoids[i].y = col-1;
                 //console.log("after : " + this.farmzoids[i].x + ", " + this.farmzoids[i].y);
             }
-            else if(randomNum <= 2 && top && top != "obstacle")     // top
+            else if(randomNum === 2 && top && !top.isObstacle)     // top
             {
                 this.farmzoids[i].x = row-1;
                 console.log("Farmzoid # " + i + " moving top");
             }
-            else if(randomNum <= 3 && topRight && topRight != "obstacle") // top right
+            else if(randomNum === 3 && topRight && !topRight.isObstacle) // top right
             {
                 this.farmzoids[i].x = row-1;
                 this.farmzoids[i].y = col+1;
                 console.log("Farmzoid # " + i + " moving top right");
             }
-            else if(randomNum <= 4 && right && right != "obstacle") // right
+            else if(randomNum === 4 && right && !right.isObstacle) // right
             {
-                this.farmzoids[i].x = col+1;
+                this.farmzoids[i].y = col+1;
                 console.log("Farmzoid # " + i + " moving right");
             }
-            else if(randomNum <= 5 && bottomRight && bottomRight != "obstacle") // bottom right
+            else if(randomNum === 5 && bottomRight && !bottomRight.isObstacle) // bottom right
             {
                 this.farmzoids[i].x = row+1;
                 this.farmzoids[i].y = col+1;
                 console.log("Farmzoid # " + i + " moving bottom right");
             }
-            else if(randomNum <= 6 && bottom && bottom != "obstacle") // bottom 
+            else if(randomNum === 6 && bottom && !bottom.isObstacle) // bottom 
             {
                 this.farmzoids[i].x = row+1;
                 console.log("Farmzoid # " + i + " moving bottom left");
             }
-            else if(randomNum <= 7 && bottomLeft && bottomLeft != "obstacle") //bottom left
+            else if(randomNum === 7 && bottomLeft && !bottomLeft.isObstacle) //bottom left
             {
                 this.farmzoids[i].x = row+1;
                 this.farmzoids[i].y = col-1;
                 console.log("Farmzoid # " + i + " moving bottom left");
             }
-            else if(randomNum <= 8 && left && left != "obstacle") // left
+            else if(randomNum === 8 && left && !left.isObstacle) // left
             {
                 this.farmzoids[i].y = col-1;
                 console.log("Farmzoid # " + i + " moving left");
@@ -568,7 +570,14 @@ class WorkingMem{
     }
 
     drawFarmZoids() {
-
+        // Color farmzoids
+        for(let i = 0; i < workingmem.farmzoids.length; ++i) {
+            let x = workingmem.farmzoids[i].x;
+            let y = workingmem.farmzoids[i].y;
+            let color = workingmem.farmzoids[i].color;
+            console.log("Farmzoid # " + i + " at " + x + ", " + y);
+            grid[index(x, y)].show_farmzoids(color);
+        }
     }
 
     drawGrid() {
@@ -585,11 +594,21 @@ class WorkingMem{
         }
 
         // Color river
-        grid[0].show_river();
+        let iy = 25
+        let sz = g_canvas.cell_size;
+        for(let ix = 1; ix <= 15; ix++)
+        {
+            if(ix < 16 && iy < 39)
+            {
+                grid[index(ix, iy)].show_river();
+                grid[index(ix+1, iy)].show_river();
+                iy++;
+            }
+        }
 
         // Color cave
-        for(let x = 14; x < 19; x++) {
-            for(let y = 26; y < 30; y++) {
+        for(let x = 26; x < 30; x++) {
+            for(let y = 14; y < 19; y++) {
                 grid[index(x, y)].show_cave();
             }
         }
@@ -683,7 +702,7 @@ function setup() // P5 Setup Fcn
 
 
     // Change framerate speed
-    frameRate(0.5)
+    frameRate(1)
     //do_btn( ); 
 }
 
@@ -695,92 +714,24 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
     frameCounter++;
 
     workingmem.drawGrid();
-
-    // Color farmzoids
-    for(let i = 0; i < workingmem.farmzoids.length; ++i) {
-        let x = workingmem.farmzoids[i].x;
-        let y = workingmem.farmzoids[i].y;
-        let color = workingmem.farmzoids[i].color;
-        console.log("Farmzoid # " + i + " at " + x + ", " + y);
-        grid[index(x, y)].show_farmzoids(color);
-    }
-
+    workingmem.drawFarmZoids();
     
+    let dayCount = 1;
+    console.log("current day:" + dayCount);
+    if(dayCount > workingmem.fms.dayCounter){
+        console.log("it's a new day")
+        workingmem.natureEffects();
+        workingmem.setupTasks();
+        workingmem.fms.checkNewDay();
+        dayCount = workingmem.fms.dayCounter;
+        console.log("new day is: " + dayCount)
+    }
     // Update daily nature changes
-    workingmem.natureEffects();
-    workingmem.setupTasks();
-    workingmem.fms.checkNewDay();
+    // workingmem.natureEffects();
+    // workingmem.setupTasks();
+    // workingmem.fms.checkNewDay();
 
     workingmem.checkNeighbors();
 
     console.log(workingmem.fms.taskList);
-}
-
-
-
-
-/*******************************************************************************************************************
-
-    RANDOM FUNCTIONS
-
-*******************************************************************************************************************/
-function do_btn( )
-{ // grab code from csu\assets\js\js+p5+editbox
-
-    // Creates an <input></input> element in the DOM for text input.
-    // Use g_input.size() to set the display length of the box.
-    g_input = createInput( ); // Create input textbox; get via "contentx = g_input.value();"
-    g_input.position(  20, 30 );
-    g_button = createButton( "Submit" );
-    g_button.id( "btn" ); //Add for P5 btn onclick
-    g_button.position( 160, 30 );
-
-    g_button2 = createButton( "Save Image" );
-    g_button2.position( 20, 60 );
-    g_button2.mousePressed( save_image ); // the callback
-}
-
-function save_image( ) // btn
-{
-    save('myCanvas-' + g_frame_cnt +  '.jpg');
-}
-
-var g_box = { t:1, hgt:47, l:1, wid:63 }; // Box in which bot can move.
-
-function csjs_get_pixel_color_sum( rx, ry )
-{
-    let acolors = get( rx, ry ); // Get pixel color [RGBA] array.
-    let sum = acolors[ 0 ] + acolors[ 1 ] + acolors[ 2 ]; // Sum RGB.
-    //dbg console.log( "color_sum = " + sum );
-    return sum;
-}
-
-
-function keyPressed( )
-{
-    console.log( "@: keyPressed " );
-    g_stop = ! g_stop;
-    if (g_stop) { noLoop(); } else {loop();}
-}
-
-function mousePressed( )
-{
-    console.log( "@: mousePressed " );
-    let x = mouseX;
-    let y = mouseY;
-    //dbg console.log( "mouse x,y = " + x + "," + y );
-    let sz = g_canvas.cell_size;
-    let gridx = round( (x-0.5) / sz );
-    let gridy = round( (y-0.5) / sz );
-    //dbg console.log( "grid x,y = " + gridx + "," + gridy );
-    //dbg console.log( "box wid,hgt = " + g_box.wid + "," + g_box.hgt );
-    farmzoidOne.x = gridx + g_box.wid; // Ensure its positive.
-    //dbg console.log( "bot x = " + farmzoidOne.x );
-    farmzoidOne.x %= g_box.wid; // Wrap to fit box.
-    farmzoidOne.y = gridy + g_box.hgt;
-    //dbg console.log( "bot y = " + farmzoidOne.y );
-    farmzoidOne.y %= g_box.hgt;
-    //dbg console.log( "bot x,y = " + farmzoidOne.x + "," + farmzoidOne.y );
-    console.log( "Call g_l4job.draw_fn for mousePressed" );
-    g_l4job.draw_fn( );
 }
