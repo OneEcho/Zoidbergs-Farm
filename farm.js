@@ -313,7 +313,7 @@ class Farmzoid {
 
         this.goal_row = null;
         this.goal_col = null;
-        this.neighbors = [];
+        this.neighbors = [];    
         this.stack = [];
     }
 
@@ -723,19 +723,14 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
     frameCounter++;
 
     workingmem.drawGrid();
-<<<<<<< Updated upstream
+    workingmem.drawFarmZoids();
 
-    // Color farmzoids
-    for(let i = 0; i < workingmem.farmzoids.length; ++i) {
-        let x = workingmem.farmzoids[i].x;
-        let y = workingmem.farmzoids[i].y;
-        let color = workingmem.farmzoids[i].color;
-        console.log("Farmzoid # " + i + " at " + x + ", " + y);
-        grid[index(x, y)].show_farmzoids(color);
-    }
+    console.log(workingmem.fms.taskList);
 
     let dayCount = 1;
     console.log("current day:" + dayCount);
+
+    // Update daily nature changes
     if(dayCount > workingmem.fms.dayCounter){
         console.log("it's a new day")
         workingmem.natureEffects();
@@ -744,14 +739,10 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
         dayCount = workingmem.fms.dayCounter;
         console.log("new day is: " + dayCount)
     }
-=======
-    workingmem.drawFarmZoids();
-    
->>>>>>> Stashed changes
     // Update daily nature changes
     // workingmem.natureEffects();
     // workingmem.setupTasks();
-    workingmem.fms.checkNewDay();
+    //workingmem.fms.checkNewDay();
 
     workingmem.checkNeighbors();
 
