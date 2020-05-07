@@ -7,9 +7,9 @@
     <title>Jathp-P5-JS-HTML</title>    
     <link rel="stylesheet" href="assets/styles.css">   
     <style> body {padding: 0; margin: 0;} </style>    
+    <script src="assets/draw-stuff.js"></script> 
     <script type="text/javascript" src="farm.js"></script> 
     <script src="p5.js"></script> 
-    <script src="cs-sketch.js"></script>  
     <script type="text/javascript" src="Jathp.js"></script>    
 
   </head>
@@ -18,13 +18,14 @@
       <h1>Farmzoids CPSC 481 Project 2</h1>   
       <p> by Canyon Schwartz, Nathan Nhek, Will Clemons, and Liam Fitzpatrick</p>
     </div>   
+    <div>
+      <!--- Show output to screen, update using innertext-->
+      <h1 id=dayCount></h1>
+      <h1 id=weather></h1>
+      <h1 id=tasks></h1>
+    </div>
     
   </body>  
-
-<script src="assets/draw-stuff.js"></script> 
-
-
-
 <script type="text/lisp"> ;File: prelude.lsp
 ; This file contains aliases and common definitions.
 ; It also imports the javascript Math functions.
