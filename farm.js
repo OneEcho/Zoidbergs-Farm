@@ -705,10 +705,19 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
         grid[index(x, y)].show_farmzoids(color);
     }
 
-    
+    let dayCount = 1;
+    console.log("current day:" + dayCount);
+    if(dayCount > workingmem.fms.dayCounter){
+        console.log("it's a new day")
+        workingmem.natureEffects();
+        workingmem.setupTasks();
+        workingmem.fms.checkNewDay();
+        dayCount = workingmem.fms.dayCounter;
+        console.log("new day is: " + dayCount)
+    }
     // Update daily nature changes
-    workingmem.natureEffects();
-    workingmem.setupTasks();
+    // workingmem.natureEffects();
+    // workingmem.setupTasks();
     workingmem.fms.checkNewDay();
 
     workingmem.checkNeighbors();
