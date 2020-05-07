@@ -54,8 +54,6 @@ class Cell {
     }
 
     show_river() {
-        let x = this.col * g_canvas.cell_size;
-        let y = this.row * g_canvas.cell_size;
         let sz = g_canvas.cell_size;
         let x = this.col * g_canvas.cell_size;
         let y = this.row * g_canvas.cell_size;
