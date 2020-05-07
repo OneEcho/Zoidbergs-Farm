@@ -32,6 +32,10 @@ const plantStageColors = {
     deadPlantColor: "#0a0602"
 };
 
+function calc_heuristicValue(row, col, goal_row, goal_col){
+    return Math.abs(hrow - goal_row) + Math.abs(hcol - goal_col)
+}
+
 
 /*******************************************************************************************************************
  Nature Class -- defines nature effects
@@ -113,14 +117,15 @@ y               : y-coord
 *******************************************************************************************************************/
 class Plant {
     constructor() {
-        this.plantType = "apple";
-        this.growthCycle = "seed";
-        this.waterReserve = 0;
-        this.fruitingState = null;
+        this.plantType = "apple";   // Apple, corn, or berry 
+        this.growthCycle = "seed";  // Seed -> stalk -> bush
+        this.waterReserve = 0;      // Water reserve
+        this.fruitingState = null;  // 
         this.fertilized = false;
         this.blight = null;
         this.taskDone = null;
         this.age = 0;
+        this.plantColor = null  // RGB color value
     }
 
     incrementAge() {
@@ -295,9 +300,9 @@ plotLocations   : list of coords of valid plots
 *******************************************************************************************************************/
 class Farmzoid {
     constructor(x, y, color) {
-        this.taskCounter = 0;   // up to 50 tasks
-        this.task = null;
-        this.taskCompleted = false;     // Done a task yet?
+        this.taskCounter = 0;     // up to 50 tasks
+        this.task = null;         // Assign a task object
+        this.hasTask = false;     // Done a task yet?
         this.equipment = null;
         this.x = x;         // X position
         this.y = y;         // Y position
@@ -408,7 +413,7 @@ class FMS {
             this.taskCount = 0;
 
             if(this.dayCounter <= 40) { 
-                alert("Day 40 reached!");
+                //alert("Day 40 reached!");
             }
             this.dayCounter++;
         }
@@ -442,7 +447,6 @@ farmzoid        : List of 4 bots
 class WorkingMem{
     constructor(nature, fms, validPlots) {
         this.validPlots = validPlots; 
-        console.log(validPlots);
         this.nature = nature;
         this.fms = fms;
         this.farmzoids = [new Farmzoid(21, 19, "green"), new Farmzoid(17, 19, "blue"), new Farmzoid(19, 21, "pink"), new Farmzoid(19, 17, "yellow")];
@@ -452,9 +456,12 @@ class WorkingMem{
         console.log("natureEffects()");
         nature.updateWeather();
 
+        // Loop through all plots
         for(let i = 0; i < 20; i++) {
+
+            // If there is a plant in the plot
             if(validPlots[i].plant != null) {
-                validPlots[i].plant.incrementAge();
+                validPlots[i].plant.incrementAge();     
                 validPlots[i].plant.updateGrowthCycle();
                 validPlots[i].plant.updateFruitingState();
                 if(nature.sky === "clear" && validPlots[i].plant.waterReserve > 0) {
@@ -569,8 +576,8 @@ class WorkingMem{
         }
     }
 
+    // Color farmzoids
     drawFarmZoids() {
-        // Color farmzoids
         for(let i = 0; i < workingmem.farmzoids.length; ++i) {
             let x = workingmem.farmzoids[i].x;
             let y = workingmem.farmzoids[i].y;
@@ -580,6 +587,7 @@ class WorkingMem{
         }
     }
 
+    // Color dirt, plots, river, cave
     drawGrid() {
         // Color the dirt
         for(let i = 0; i < grid.length; i++) {
