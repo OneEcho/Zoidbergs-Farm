@@ -12,7 +12,7 @@ class Cell {
         this.row = row;             // Row number
         this.col = col;             // Col number
         this.color = "";            // Color of cell (red, black, purple...)
-        this.obstacle = false;
+        this.obstacle = false;      // Is it passable terrain?
     }
 
     // Fill cells
@@ -23,6 +23,7 @@ class Cell {
         fill('tan');
         rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
         this.color = "dirt";
+        this.obstacle = false;
     }
 
     show_plots() {
@@ -53,20 +54,14 @@ class Cell {
     }
 
     show_river() {
+        let x = this.col * g_canvas.cell_size;
+        let y = this.row * g_canvas.cell_size;
         let sz = g_canvas.cell_size;
-        fill('blue');
         stroke(255);
-        var iy = 25
-        for(var ix = 1; ix <= 15; ix++)
-        {
-            if(ix < 16 && iy < 39)
-            {
-                rect(ix*sz, iy*sz, sz, sz);
-                rect((ix + 1)*sz, iy*sz, sz, sz)
-                iy += 1;
-            }
-        }
-
+        fill('blue');
+        rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
+        
+        // Bridge paths
         fill('grey')
         rect(6*sz, 30*sz, sz, sz)
         rect(7*sz, 30*sz, sz, sz)
@@ -81,6 +76,7 @@ class Cell {
         stroke(255);
         fill(color);
         rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
+        this.obstacle = true;
     }
 }
 
