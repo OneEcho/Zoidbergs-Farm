@@ -56,8 +56,10 @@ class Nature {
         this.plots = validPlots;
     }
 
+    // Update the weather each day
     updateWeather() {
-        this.randCloudy();
+        this.randCloudy();  // RNG for weather
+        this.randBlight();  // RNG for blgiht
     }
 
     randCloudy() { 
@@ -296,16 +298,16 @@ plotLocations   : list of coords of valid plots
 *******************************************************************************************************************/
 class Farmzoid {
     constructor(x, y, color) {
-        this.taskDone = 0;   // up to 50 tasks
+        this.taskCounter = 0;   // up to 50 tasks
         this.task = null;
-        this.taskCompleted = false;
+        this.taskCompleted = false;     // Done a task yet?
         this.equipment = null;
-        this.x = x;
-        this.y = y;
-        this.barnX = 19;
+        this.x = x;         // X position
+        this.y = y;         // Y position
+        this.barnX = 19;    // Know where the bar X,Y is
         this.barnY = 19;
-        this.color = color;
-        this.plotLocations = plotLocations;
+        this.color = color; // Color of the farmzoid
+        this.plotLocations = plotLocations; // Know where the plot locations are
     }
 
     setTask(task) {
@@ -384,7 +386,7 @@ class FMS {
     constructor(dayCount) {
         this.taskList = [];
         this.taskCount = 0;
-        this.day = dayCount;
+        this.dayCounter = dayCount;
     }
 
     addTasks(task) {
@@ -403,10 +405,10 @@ class FMS {
             this.taskList.clear;
             this.taskCount = 0;
 
-            if(this.day <= 40) { 
+            if(this.dayCounter <= 40) { 
                 alert("Day 40 reached!");
             }
-            this.day++;
+            this.dayCounter++;
         }
     }
 }
@@ -487,6 +489,116 @@ class WorkingMem{
             }
         }
     }
+
+    // Randomly check for neighbors in all 8 directions?
+    checkNeighbors() { 
+        console.log("checkNeighbors()");
+        let randomNum;
+        let row;
+        let col;
+        let top, topLeft, topRight, right, bottomRight, bottom, bottomLeft, left;
+
+        // TODO: Choosing random move / neighbors, maybe move based on goal (tasks, plant locations)?????
+        for(let i = 0; i < this.farmzoids.length; ++i) {
+            randomNum = Math.floor((Math.random() * 8) + 1);  // 1 - 8
+            row = this.farmzoids[i].x;
+            col = this.farmzoids[i].y;
+
+            topLeft     = grid[index(row-1, col-1)];    // 1
+            top         = grid[index(row-1, col)];      // 2
+            topRight    = grid[index(row-1, col+1)];    // 3
+            right       = grid[index(row, col+1)];      // 4
+            bottomRight = grid[index(row+1, col+1)];    // 5
+            bottom      = grid[index(row+1, col)];      // 6
+            bottomLeft  = grid[index(row+1, col-1)];    // 7
+            left        = grid[index(row, col-1)];      // 8
+
+            // Check for move location, valid cell, and if it's not an obstacle
+            if(randomNum === 1 && topLeft && topLeft != "obstacle") // top left
+            {
+                // console.log("Farmzoid # " + i + " moving top left");
+                // console.log("before : " + this.farmzoids[i].x + ", " + this.farmzoids[i].y);
+                this.farmzoids[i].x = row-1;   // Change farmzoids X, Y position
+                this.farmzoids[i].y = col-1;
+                //console.log("after : " + this.farmzoids[i].x + ", " + this.farmzoids[i].y);
+            }
+            else if(randomNum <= 2 && top && top != "obstacle")     // top
+            {
+                this.farmzoids[i].x = row-1;
+                console.log("Farmzoid # " + i + " moving top");
+            }
+            else if(randomNum <= 3 && topRight && topRight != "obstacle") // top right
+            {
+                this.farmzoids[i].x = row-1;
+                this.farmzoids[i].y = col+1;
+                console.log("Farmzoid # " + i + " moving top right");
+            }
+            else if(randomNum <= 4 && right && right != "obstacle") // right
+            {
+                this.farmzoids[i].x = col+1;
+                console.log("Farmzoid # " + i + " moving right");
+            }
+            else if(randomNum <= 5 && bottomRight && bottomRight != "obstacle") // bottom right
+            {
+                this.farmzoids[i].x = row+1;
+                this.farmzoids[i].y = col+1;
+                console.log("Farmzoid # " + i + " moving bottom right");
+            }
+            else if(randomNum <= 6 && bottom && bottom != "obstacle") // bottom 
+            {
+                this.farmzoids[i].x = row+1;
+                console.log("Farmzoid # " + i + " moving bottom left");
+            }
+            else if(randomNum <= 7 && bottomLeft && bottomLeft != "obstacle") //bottom left
+            {
+                this.farmzoids[i].x = row+1;
+                this.farmzoids[i].y = col-1;
+                console.log("Farmzoid # " + i + " moving bottom left");
+            }
+            else if(randomNum <= 8 && left && left != "obstacle") // left
+            {
+                this.farmzoids[i].y = col-1;
+                console.log("Farmzoid # " + i + " moving left");
+            }
+            else {
+                console.log("Farmzoid # " + i + " tried to move to invalid cell");
+                i--;    // Redo for that bot
+            }
+        }
+    }
+
+    drawFarmZoids() {
+
+    }
+
+    drawGrid() {
+        // Color the dirt
+        for(let i = 0; i < grid.length; i++) {
+            grid[i].show_dirt();
+        }
+        
+        // Color the plots
+        for(let i = 0; i < plotLocations.length; i++) {
+            let x = plotLocations[i][1];
+            let y = plotLocations[i][0];
+            grid[index(x, y)].show_plots();
+        }
+
+        // Color river
+        grid[0].show_river();
+
+        // Color cave
+        for(let x = 14; x < 19; x++) {
+            for(let y = 26; y < 30; y++) {
+                grid[index(x, y)].show_cave();
+            }
+        }
+
+        // Color barn
+        grid[index(barnLocation.x, barnLocation.y)].show_barn();
+
+    }
+    
 }
 // End of Farm Objects
 
@@ -572,8 +684,7 @@ function setup() // P5 Setup Fcn
 
     // Change framerate speed
     frameRate(0.5)
-
-    do_btn( ); 
+    //do_btn( ); 
 }
 
 // Main farm loop?
@@ -583,43 +694,25 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
     console.log("frame = " + frameCounter);
     frameCounter++;
 
-    // Color the dirt
-    for(let i = 0; i < grid.length; i++) {
-        grid[i].show_dirt();
-    }
-    
-    // Color the plots
-    for(let i = 0; i < plotLocations.length; i++) {
-        let x = plotLocations[i][1];
-        let y = plotLocations[i][0];
-        grid[index(x, y)].show_plots();
-    }
-
-    // Color river
-    grid[0].show_river();
-
-    // Color cave
-    for(let x = 14; x < 19; x++) {
-        for(let y = 26; y < 30; y++) {
-            grid[index(x, y)].show_cave();
-        }
-    }
+    workingmem.drawGrid();
 
     // Color farmzoids
     for(let i = 0; i < workingmem.farmzoids.length; ++i) {
         let x = workingmem.farmzoids[i].x;
         let y = workingmem.farmzoids[i].y;
         let color = workingmem.farmzoids[i].color;
+        console.log("Farmzoid # " + i + " at " + x + ", " + y);
         grid[index(x, y)].show_farmzoids(color);
     }
 
-    // Color barn
-    grid[index(barnLocation.x, barnLocation.y)].show_barn();
-
+    
     // Update daily nature changes
     workingmem.natureEffects();
     workingmem.setupTasks();
     workingmem.fms.checkNewDay();
+
+    workingmem.checkNeighbors();
+
     console.log(workingmem.fms.taskList);
 }
 

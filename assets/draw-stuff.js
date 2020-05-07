@@ -91,6 +91,5 @@ function index(i, j) {
         return false;
     }
 
-    //cols = 37
     return j + i * cols;
 }
