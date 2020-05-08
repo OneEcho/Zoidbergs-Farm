@@ -26,8 +26,6 @@ let plotLocations = [
 
 let barnLocation = {x: 19, y: 19};
 
-let dayCount = 1;
-
 /*******************************************************************************************************************
  Nature Class -- defines nature effects
 --------------------------------------------------------------------------------------------------------------------
@@ -108,7 +106,7 @@ y               : y-coord
 *******************************************************************************************************************/
 class Plant {
     constructor() {
-        this.plantType = null;
+        this.plantType = null; 
         this.growthCycle = "seed";
         this.waterReserve = 0;
         this.fruitingState = null;
@@ -305,24 +303,29 @@ class Farmzoid {
     setTask(task) {
         this.task = task;
         this.hasTask = true
+        console.log(this.task);
     }
 
+    /*
     grabTask(task) {
         if(this.x && this.y === this.barnX && this.barnY){
             this.task = task;
         }
     }
+    */
 
     doTask(plantPlot) {
         if(plantPlot.x === this.x && plantPlot.y === this.y && plantPlot.plant != null) {
             currPlot.doPlotTask();
             this.task.taskCompleted = true;
+            dailyTaskCount++;
             this.hasTask = false;
             console.log(this.task.taskName + " completed");
         }
         if(platPlot.x === this.x && plantPlot.y === this.y && plantPlot.plant == null) {
             plantPlot.plant.doPlantTask();
             this.task.taskCompleted = true;
+            dailyTaskCount++;
             this.hasTask = false;
             console.log(this.task.taskName + " completed");
         }
@@ -382,69 +385,11 @@ taskCount       : Keeps count of the number of tasts done (200 per day, 50 for e
 day             : Keeps track of the day
 *******************************************************************************************************************/
 class FMS {
-    constructor(dayCount) {
+    constructor(dayCount, validPlots) {
         this.taskList = [];
         this.taskCount = 0;
         this.dayCounter = dayCount;
-    }
-
-    addTasks(task) {
-        if(this.taskCount <= 200) {
-            this.taskList.push(task);
-            this.taskCount++;
-        }
-        else {
-            this.checkNewDay();
-        }
-    }
-
-    checkNewDay() {
-        if(this.taskCount === 200) {
-            console.log("Task count is 200 ... Starting new day");
-            this.taskList.clear;
-            this.taskCount = 0;
-            console.log("Day: "  + this.dayCounter);
-
-            if(this.dayCounter <= 40) { 
-                alert("Day 40 reached!");
-            }
-            this.dayCounter++;
-        }
-    }
-}
-
-
-/******************************************************************************************************************
-Task Class -- task class with necessary components
--------------------------------------------------------------------------------------------------------------------
-taskName        : name of task
-equipment       : equipment needed
-plotLocation    : location of plot that task needs to be done
-*******************************************************************************************************************/
-class Task {
-    constructor(taskName, plotLocation, equipment) {
-        this.taskName = taskName;
-        this.plotLocation = plotLocation;
-        this.equipment = equipment;
-        this.taskCompleted = false;
-    }
-}
-
-/******************************************************************************************************************
-WorkingMem Class -- sets up rules and nature effects
--------------------------------------------------------------------------------------------------------------------
-validPlots      : List of valid plots
-nature          : Nature class to access current weather
-fms             : FMS class to access tasks
-farmzoid        : List of 4 bots
-*******************************************************************************************************************/
-class WorkingMem{
-    constructor(nature, fms, validPlots) {
-        this.validPlots = validPlots; 
-        console.log(validPlots);
-        this.nature = nature;
-        this.fms = fms;
-        this.farmzoids = [new Farmzoid(21, 19, "green"), new Farmzoid(17, 19, "blue"), new Farmzoid(19, 21, "pink"), new Farmzoid(19, 17, "yellow")];
+        this.validPlots = validPlots;
     }
 
     natureEffects() {
@@ -483,6 +428,69 @@ class WorkingMem{
         }
     }
 
+    /*
+    addTasks(task) {
+        if(this.taskCount <= 200) {
+            this.taskList.push(task);
+            this.taskCount++;
+        }
+        else {
+            this.checkNewDay();
+        }
+    }
+    */
+
+    /*
+    checkNewDay() {
+        if(this.taskCount === 200) {
+            console.log("Task count is 200 ... Starting new day");
+            this.taskList.clear;
+            this.taskCount = 0;
+            console.log("Day: "  + this.dayCounter);
+
+            if(this.dayCounter <= 40) { 
+                alert("Day 40 reached!");
+            }
+            this.dayCounter++;
+        }
+    }
+    */
+}
+
+
+/******************************************************************************************************************
+Task Class -- task class with necessary components
+-------------------------------------------------------------------------------------------------------------------
+taskName        : name of task
+equipment       : equipment needed
+plotLocation    : location of plot that task needs to be done
+*******************************************************************************************************************/
+class Task {
+    constructor(taskName, plotLocation, equipment) {
+        this.taskName = taskName;
+        this.plotLocation = plotLocation;
+        this.equipment = equipment;
+        this.taskCompleted = false;
+    }
+}
+
+/******************************************************************************************************************
+WorkingMem Class -- sets up rules and nature effects
+-------------------------------------------------------------------------------------------------------------------
+validPlots      : List of valid plots
+nature          : Nature class to access current weather
+fms             : FMS class to access tasks
+farmzoid        : List of 4 bots
+*******************************************************************************************************************/
+class WorkingMem{
+    constructor(nature, fms, validPlots) {
+        this.validPlots = validPlots; 
+        console.log(validPlots);
+        this.nature = nature;
+        this.fms = fms;
+        this.farmzoids = [new Farmzoid(21, 19, "green"), new Farmzoid(17, 19, "blue"), new Farmzoid(19, 21, "pink"), new Farmzoid(19, 17, "yellow")];
+    }
+
     setupTasks() {
         for(let j = 0; j < 4; j++){
             if(this.farmzoids[j].hasTask === false) {
@@ -494,16 +502,16 @@ class WorkingMem{
                         if(validPlots[i].plant.plantType === null) {
                             this.farmzoids[j].setTask(new Task("plant seed", validPlots[i], "apple"));
                         }
-                        if(validPlots[i].plant.fertilized === false){
+                        else if(validPlots[i].plant.fertilized === false){
                             this.farmzoids[j].setTask(new Task("fertilize", validPlots[i], "fertilizer"));
                         }
-                        if(validPlots[i].plant.fertilized === true && validPlots[i].plant.waterReserve <= 3) {
+                        else if(validPlots[i].plant.fertilized === true && validPlots[i].plant.waterReserve <= 3) {
                             this.farmzoids[j].setTask(new Task("watering", validPlots[i], "water"));
                         }
-                        if(validPlots[i].plant.blight != null) {
+                        else if(validPlots[i].plant.blight != null) {
                             this.farmzoids[j].setTask(new Task("soaping", validPLots[i], "soap"));
                         }
-                        if(validPlots[i].plant.fruitingState === "red" && validPlots[i].plant.waterReserve > 0 && validPlots[i].plant.waterReserve <=3) {
+                        else if(validPlots[i].plant.fruitingState === "red" && validPlots[i].plant.waterReserve > 0 && validPlots[i].plant.waterReserve <=3) {
                             this.farmzoids[j].setTask(new Task("harvest", validPlots[i], "barrel"));
                         }
                     }
@@ -654,10 +662,13 @@ let validPlots =    [new Plot(plotLocations[0][0], plotLocations[0][1]),
                      new Plot(plotLocations[19][0], plotLocations[19][1])];
 
 var nature = new Nature();
-var fms = new FMS(dayCount);
+var fms = new FMS(1, validPlots);
 var workingmem = new WorkingMem(nature, fms, validPlots);
 
 var cols, rows;
+
+let mainDayCount = 0;
+let dailyTaskCount = 50;
 
 // End of Farm Methods
 
@@ -709,6 +720,7 @@ function setup() // P5 Setup Fcn
     //do_btn( ); 
 }
 
+
 // Main farm loop?
 function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
 {
@@ -727,15 +739,20 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
         grid[index(x, y)].show_farmzoids(color);
     }
 
+    if(dailyTaskCount === 50) {
+        mainDayCount++;
+        console.log("it's a new day, day#: " + mainDayCount)
+        dailyTaskCount = 0;
+        workingmem.fms.natureEffects();
+        workingmem.setupTasks();
+    }
+
     
     // Update daily nature changes
-    workingmem.natureEffects();
-    workingmem.setupTasks();
+
     // workingmem.fms.checkNewDay();
 
     workingmem.checkNeighbors();
-
-    console.log(workingmem.fms.taskList);
 }
 
 
