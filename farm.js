@@ -26,15 +26,7 @@ let plotLocations = [
 
 let barnLocation = {x: 19, y: 19};
 
-// call to change day, and also check to see if the growing season has ended
-function dayCounter(dayCount) {
-    dayCount = dayCount + 1;
-
-    // growing season ends
-    if( dayCount == 41){
-        alert("I am an alert box!");
-    }
-}
+let dayCount = 1;
 
 /*******************************************************************************************************************
  Nature Class -- defines nature effects
@@ -116,7 +108,7 @@ y               : y-coord
 *******************************************************************************************************************/
 class Plant {
     constructor() {
-        this.plantType = "apple";
+        this.plantType = null;
         this.growthCycle = "seed";
         this.waterReserve = 0;
         this.fruitingState = null;
@@ -266,7 +258,7 @@ class Plot {
         this.x = x;
         this.y = y;
         this.plant = new Plant();
-        this.hasPlot = false;
+        this.hasPlot = true;
         this.taskDone = null;
     }
 
@@ -300,7 +292,7 @@ class Farmzoid {
     constructor(x, y, color) {
         this.taskCounter = 0;   // up to 50 tasks
         this.task = null;
-        this.taskCompleted = false;     // Done a task yet?
+        this.hasTask = false;
         this.equipment = null;
         this.x = x;         // X position
         this.y = y;         // Y position
@@ -312,6 +304,7 @@ class Farmzoid {
 
     setTask(task) {
         this.task = task;
+        this.hasTask = true
     }
 
     grabTask(task) {
@@ -323,9 +316,15 @@ class Farmzoid {
     doTask(plantPlot) {
         if(plantPlot.x === this.x && plantPlot.y === this.y && plantPlot.plant != null) {
             currPlot.doPlotTask();
+            this.task.taskCompleted = true;
+            this.hasTask = false;
+            console.log(this.task.taskName + " completed");
         }
         if(platPlot.x === this.x && plantPlot.y === this.y && plantPlot.plant == null) {
             plantPlot.plant.doPlantTask();
+            this.task.taskCompleted = true;
+            this.hasTask = false;
+            console.log(this.task.taskName + " completed");
         }
     }
 }
@@ -404,6 +403,7 @@ class FMS {
             console.log("Task count is 200 ... Starting new day");
             this.taskList.clear;
             this.taskCount = 0;
+            console.log("Day: "  + this.dayCounter);
 
             if(this.dayCounter <= 40) { 
                 alert("Day 40 reached!");
@@ -426,6 +426,7 @@ class Task {
         this.taskName = taskName;
         this.plotLocation = plotLocation;
         this.equipment = equipment;
+        this.taskCompleted = false;
     }
 }
 
@@ -483,10 +484,31 @@ class WorkingMem{
     }
 
     setupTasks() {
-        for(let i = 0; i < 20; i++) {
-            if(validPlots[i].hasPlot === false){
-                fms.addTasks(new Task("place plot", validPlots[i], "plot equipment"));
-            }
+        for(let j = 0; j < 4; j++){
+            if(this.farmzoids[j].hasTask === false) {
+                for(let i = 0; i < 20; i++) {
+                    if(validPlots[i].hasPlot === false){
+                        // fms.addTasks(new Task("place plot", validPlots[i], "plot equipment"));
+                        this.farmzoids[j].setTask(new Task("place plot", validPlots[i], "plot equipment"));
+                    } else {
+                        if(validPlots[i].plant.plantType === null) {
+                            this.farmzoids[j].setTask(new Task("plant seed", validPlots[i], "apple"));
+                        }
+                        if(validPlots[i].plant.fertilized === false){
+                            this.farmzoids[j].setTask(new Task("fertilize", validPlots[i], "fertilizer"));
+                        }
+                        if(validPlots[i].plant.fertilized === true && validPlots[i].plant.waterReserve <= 3) {
+                            this.farmzoids[j].setTask(new Task("watering", validPlots[i], "water"));
+                        }
+                        if(validPlots[i].plant.blight != null) {
+                            this.farmzoids[j].setTask(new Task("soaping", validPLots[i], "soap"));
+                        }
+                        if(validPlots[i].plant.fruitingState === "red" && validPlots[i].plant.waterReserve > 0 && validPlots[i].plant.waterReserve <=3) {
+                            this.farmzoids[j].setTask(new Task("harvest", validPlots[i], "barrel"));
+                        }
+                    }
+                }
+            }   
         }
     }
 
@@ -632,7 +654,7 @@ let validPlots =    [new Plot(plotLocations[0][0], plotLocations[0][1]),
                      new Plot(plotLocations[19][0], plotLocations[19][1])];
 
 var nature = new Nature();
-var fms = new FMS(1);
+var fms = new FMS(dayCount);
 var workingmem = new WorkingMem(nature, fms, validPlots);
 
 var cols, rows;
@@ -683,7 +705,7 @@ function setup() // P5 Setup Fcn
 
 
     // Change framerate speed
-    frameRate(0.5)
+    frameRate(1)
     //do_btn( ); 
 }
 
@@ -709,7 +731,7 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
     // Update daily nature changes
     workingmem.natureEffects();
     workingmem.setupTasks();
-    workingmem.fms.checkNewDay();
+    // workingmem.fms.checkNewDay();
 
     workingmem.checkNeighbors();
 
