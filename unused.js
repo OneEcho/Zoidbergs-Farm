@@ -45,21 +45,21 @@ function keyPressed( )
 function mousePressed( )
 {
     console.log( "@: mousePressed " );
-    let x = mouseX;
-    let y = mouseY;
-    //dbg console.log( "mouse x,y = " + x + "," + y );
-    let sz = g_canvas.cell_size;
-    let gridx = round( (x-0.5) / sz );
-    let gridy = round( (y-0.5) / sz );
-    //dbg console.log( "grid x,y = " + gridx + "," + gridy );
-    //dbg console.log( "box wid,hgt = " + g_box.wid + "," + g_box.hgt );
-    farmzoidOne.x = gridx + g_box.wid; // Ensure its positive.
-    //dbg console.log( "bot x = " + farmzoidOne.x );
-    farmzoidOne.x %= g_box.wid; // Wrap to fit box.
-    farmzoidOne.y = gridy + g_box.hgt;
-    //dbg console.log( "bot y = " + farmzoidOne.y );
-    farmzoidOne.y %= g_box.hgt;
-    //dbg console.log( "bot x,y = " + farmzoidOne.x + "," + farmzoidOne.y );
-    console.log( "Call g_l4job.draw_fn for mousePressed" );
+    // let x = mouseX;
+    // let y = mouseY;
+    // //dbg console.log( "mouse x,y = " + x + "," + y );
+    // let sz = g_canvas.cell_size;
+    // let gridx = round( (x-0.5) / sz );
+    // let gridy = round( (y-0.5) / sz );
+    // //dbg console.log( "grid x,y = " + gridx + "," + gridy );
+    // //dbg console.log( "box wid,hgt = " + g_box.wid + "," + g_box.hgt );
+    // farmzoidOne.x = gridx + g_box.wid; // Ensure its positive.
+    // //dbg console.log( "bot x = " + farmzoidOne.x );
+    // farmzoidOne.x %= g_box.wid; // Wrap to fit box.
+    // farmzoidOne.y = gridy + g_box.hgt;
+    // //dbg console.log( "bot y = " + farmzoidOne.y );
+    // farmzoidOne.y %= g_box.hgt;
+    // //dbg console.log( "bot x,y = " + farmzoidOne.x + "," + farmzoidOne.y );
+    // console.log( "Call g_l4job.draw_fn for mousePressed" );
     g_l4job.draw_fn( );
 }

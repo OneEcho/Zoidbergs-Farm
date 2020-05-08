@@ -11,12 +11,12 @@ class Cell {
     constructor(row, col) {
         this.row = row;             // Row number
         this.col = col;             // Col number
-        this.color = "";            // Color of cell (red, black, purple...)
-        this.isObstacle = false;
-        this.heur_val = 0;
+        this.color = "";            // Dirt, plot, barn, river, cave, farmzoid
+        this.isObstacle = false;    // Is it passasble terrain?
+        this.heur_val = 0;          // Heuristic value forr BFS
     }
 
-    // Fill cells
+    // Fill background with dirt dells
     show_dirt() {
         let y = this.col * g_canvas.cell_size;
         let x = this.row * g_canvas.cell_size;
@@ -27,6 +27,7 @@ class Cell {
         this.isObstacle = false;
     }
 
+    // Color plot cells
     show_plots() {
         let y = this.col * g_canvas.cell_size;
         let x = this.row * g_canvas.cell_size;
@@ -36,6 +37,7 @@ class Cell {
         this.color = "plot";
     }
 
+    // Color cave cell
     show_cave() {
         let y = this.col * g_canvas.cell_size;
         let x = this.row * g_canvas.cell_size;
@@ -45,6 +47,7 @@ class Cell {
         this.isObstacle = true;
     }
 
+    // Color barn cell
     show_barn() {
         let y = this.col * g_canvas.cell_size;
         let x = this.row * g_canvas.cell_size;
@@ -54,12 +57,14 @@ class Cell {
         this.color = "barn";
     }
 
+    // Color river cells
     show_river() {
         let sz = g_canvas.cell_size;
         let x = this.col * g_canvas.cell_size;
         let y = this.row * g_canvas.cell_size;
         fill('blue');
         rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
+        this.color = "river";
         this.isObstacle = true;
 
         fill('grey')
@@ -69,15 +74,41 @@ class Cell {
         rect(12*sz, 35*sz, sz, sz)
     }
 
-    // Different functions for farmzoids 1-4?
-    show_farmzoids(color) {
+    // Color a farmzoid
+    show_farmzoid(color) {
         let y = this.col * g_canvas.cell_size;
         let x = this.row * g_canvas.cell_size;
         stroke(255);
         fill(color);
         rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
-        this.isObstacle = true;
+        this.isObstacle = false;
     }
+
+    // Reset the current cell position of the bot, so other bots can consider moving to this
+    // location after this bot has determined its bestFS move
+    reset_farmzoidCell() {
+        let y = this.col * g_canvas.cell_size;
+        let x = this.row * g_canvas.cell_size;
+        stroke(255);
+
+        if(this.color === "barn") {
+            fill('DarkRed')
+            this.color === "barn";
+        }
+        else if(this.color === "plot") {
+            fill("peru");
+            this.color === "plot";
+        }
+        else {
+            fill("tan");
+            this.color = "dirt";
+        }
+
+        rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
+        this.heur_val = 0;
+        this.isObstacle = false; 
+    }
+
 }
 
 // Return 2D coords into 1D index
