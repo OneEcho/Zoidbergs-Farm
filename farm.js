@@ -32,8 +32,8 @@ const plantStageColors = {
     deadPlantColor: "#0a0602"
 };
 
-function calc_heuristicValue(row, col, goal_row, goal_col){
-    return Math.abs(hrow - goal_row) + Math.abs(hcol - goal_col)
+function heur_val(row, col, goal_row, goal_col){
+    return Math.abs(row - goal_row) + Math.abs(col - goal_col)
 }
 
 
@@ -317,6 +317,18 @@ class Farmzoid {
         this.stack = [];
     }
 
+    // Set the farmzoids goal 
+    setGoal(goal_row, goal_col) {
+        this.goal_row = goal_row;
+        this.goal_col = goal_col;
+    }
+
+    // OR ... Set the farmzoids goal based on the task given
+    setGoalFromTask() {
+        this.goal_row = task.row;   // Maybe not task.row, but plotLocation.row?
+        this.goal_col = task.col;
+    }
+
     setTask(task) {
         this.task = task;
     }
@@ -333,6 +345,92 @@ class Farmzoid {
         }
         if(platPlot.x === this.x && plantPlot.y === this.y && plantPlot.plant == null) {
             plantPlot.plant.doPlantTask();
+        }
+    }
+
+    // TODO: Choosing random move / neighbors, maybe move based on goal (tasks, plant locations)?????
+    checkNeighborsZoids() {
+        let row, col;
+        let top, topLeft, topRight, right, bottomRight, bottom, bottomLeft, left;
+        let validHerusitics = [];
+
+        // Get row and col numbers
+        row = this.x;
+        col = this.y;
+
+        console.log("row col: " + row + " " + col);
+        console.log("goal row col: " + this.goal_row + " " + this.goal_col);
+
+        // Index the grid and find the cell position
+        topLeft     = grid[index(row-1, col-1)];    
+        top         = grid[index(row-1, col)];     
+        topRight    = grid[index(row-1, col+1)];    
+        right       = grid[index(row, col+1)];     
+        bottomRight = grid[index(row+1, col+1)];    
+        bottom      = grid[index(row+1, col)];     
+        bottomLeft  = grid[index(row+1, col-1)];    
+        left        = grid[index(row, col-1)];     
+
+        // If the cell is undefined and not an obstacle
+        // Top left
+        if(topLeft && !topLeft.isObstacle) {
+            topLeft.heur_val = heur_val(row-1, col-1, this.goal_row, this.goal_col);      // Generate h(n)
+            validHerusitics.push(topLeft.heur_val);                                        // Add to valid heuristic values
+            this.neighbors.push(topLeft);
+        }
+        // Top
+        if(top && !top.isObstacle) {
+            top.heur_val = heur_val(row-1, col, this.goal_row, this.goal_col);          // Generate h(n)
+            validHerusitics.push(top.heur_val);                                          // Add to valid heuristic values
+            this.neighbors.push(top);
+        }
+        // Top right
+        if(topRight && !topRight.isObstacle) {
+            topRight.heur_val = heur_val(row-1, col+1, this.goal_row, this.goal_col);      // Generate h(n)
+            validHerusitics.push(topRight.heur_val);                                           // Add to valid heuristic values
+            this.neighbors.push(topRight);
+        }
+        // Right
+        if(right && !right.isObstacle) {
+            right.heur_val = heur_val(row, col+1, this.goal_row, this.goal_col);        // Generate h(n)
+            validHerusitics.push(right.heur_val);                                              // Add to valid heuristic values
+            this.neighbors.push(right);
+        }
+        // Bottom right
+        if(bottomRight && !bottomRight.isObstacle) {
+            bottomRight.heur_val = heur_val(row+1, col+1, this.goal_row, this.goal_col);      // Generate h(n)
+            validHerusitics.push(bottomRight.heur_val);                                           // Add to valid heuristic values
+            this.neighbors.push(bottomRight);
+        }
+        // Bottom
+        if(bottom && !bottom.isObstacle) {
+            bottom.heur_val = heur_val(row+1, col, this.goal_row, this.goal_col);      // Generate h(n)
+            validHerusitics.push(bottom.heur_val);                                         // Add to valid heuristic values
+            this.neighbors.push(bottom);
+        }
+        // Bottom left
+        if(bottomLeft && !bottomLeft.isObstacle) {
+            bottomLeft.heur_val = heur_val(row+1, col-1, this.goal_row, this.goal_col);      // Generate h(n)
+            validHerusitics.push(bottomLeft.heur_val);                                            // Add to valid heuristic values
+            this.neighbors.push(bottomLeft);
+        }
+        // Left
+        if(left && !left.isObstacle) {
+            left.heur_val = heur_val(row, col-1, this.goal_row, this.goal_col);      // Generate h(n)
+            validHerusitics.push(left.heur_val);                                          // Add to valid heuristic values
+            this.neighbors.push(left);
+        }
+
+        // Pushes the cell with the lowest Heuristic value into neighbors list
+        if(this.neighbors.length > 0) {
+            //console.log("neighbors are: " + JSON.stringify(neighbors));
+            let min = Math.min.apply(Math, this.neighbors.map(function(o) { return o.heur_val; }))
+            //console.log(min);
+            let index = this.neighbors.map(function(e) { return e.heur_val; }).indexOf(min);
+            //console.log(index);
+            return this.neighbors[index];
+        } else {
+            return null;
         }
     }
 }
@@ -479,7 +577,7 @@ class WorkingMem{
                 if(validPlots[i].plant.waterReserve === 0) {
                     validPlots[i].plant.decrementFruitColor();
                 }
-                if(validPlots[i].plant.fruitingState === "black" && validPlots[i].plant.age == validPlots[i].plant.age + 2) {
+                if(validPlots[i].plant.fruitingState === "red" && validPlots[i].plant.age == validPlots[i].plant.age + 2) {
                     validPlots[i].plant.plantType = null;
                     // change back to empty plot
                     console.log("\tplant is now dead after 2 days of fruit being black")
@@ -497,6 +595,9 @@ class WorkingMem{
                 fms.addTasks(new Task("place plot", validPlots[i], "plot equipment"));
             }
         }
+        for(let i = 0; i < fms.taskList.length; ++i) {
+
+        }
     }
 
     // Randomly check for neighbors in all 8 directions?
@@ -507,73 +608,85 @@ class WorkingMem{
         let col;
         let top, topLeft, topRight, right, bottomRight, bottom, bottomLeft, left;
 
-        // TODO: Choosing random move / neighbors, maybe move based on goal (tasks, plant locations)?????
-        for(let i = 0; i < this.farmzoids.length; ++i) {
-            randomNum = Math.floor((Math.random() * 8) + 1);  // 1 - 8
-            row = this.farmzoids[i].x;
-            col = this.farmzoids[i].y;
+        // Check and calc best neighbors for all farmZoIDs
+        for(let i = 0; i < 1; ++i) {
+            // Testing with LCV = 1, index = [2]
+            let next = this.farmzoids[2].checkNeighborsZoids(); // Check all 8 adjacent cells
 
-            topLeft     = grid[index(row-1, col-1)];    // 1
-            top         = grid[index(row-1, col)];      // 2
-            topRight    = grid[index(row-1, col+1)];    // 3
-            right       = grid[index(row, col+1)];      // 4
-            bottomRight = grid[index(row+1, col+1)];    // 5
-            bottom      = grid[index(row+1, col)];      // 6
-            bottomLeft  = grid[index(row+1, col-1)];    // 7
-            left        = grid[index(row, col-1)];      // 8
+            // If valid cell
+            if(next) {
+                console.log("next: " + next.row + " " + next.col);
+                this.farmzoids[2].x = next.row; // Update row from heuristic 
+                this.farmzoids[2].y = next.col; // Update col from heuristic
+            }
 
-            // Check for move location, valid cell, and if it's not an obstacle
-            if(randomNum === 1 && topLeft && !topLeft.isObstacle) // top left
-            {
-                // console.log("Farmzoid # " + i + " moving top left");
-                // console.log("before : " + this.farmzoids[i].x + ", " + this.farmzoids[i].y);
-                this.farmzoids[i].x = row-1;   // Change farmzoids X, Y position
-                this.farmzoids[i].y = col-1;
-                //console.log("after : " + this.farmzoids[i].x + ", " + this.farmzoids[i].y);
-            }
-            else if(randomNum === 2 && top && !top.isObstacle)     // top
-            {
-                this.farmzoids[i].x = row-1;
-                console.log("Farmzoid # " + i + " moving top");
-            }
-            else if(randomNum === 3 && topRight && !topRight.isObstacle) // top right
-            {
-                this.farmzoids[i].x = row-1;
-                this.farmzoids[i].y = col+1;
-                console.log("Farmzoid # " + i + " moving top right");
-            }
-            else if(randomNum === 4 && right && !right.isObstacle) // right
-            {
-                this.farmzoids[i].y = col+1;
-                console.log("Farmzoid # " + i + " moving right");
-            }
-            else if(randomNum === 5 && bottomRight && !bottomRight.isObstacle) // bottom right
-            {
-                this.farmzoids[i].x = row+1;
-                this.farmzoids[i].y = col+1;
-                console.log("Farmzoid # " + i + " moving bottom right");
-            }
-            else if(randomNum === 6 && bottom && !bottom.isObstacle) // bottom 
-            {
-                this.farmzoids[i].x = row+1;
-                console.log("Farmzoid # " + i + " moving bottom left");
-            }
-            else if(randomNum === 7 && bottomLeft && !bottomLeft.isObstacle) //bottom left
-            {
-                this.farmzoids[i].x = row+1;
-                this.farmzoids[i].y = col-1;
-                console.log("Farmzoid # " + i + " moving bottom left");
-            }
-            else if(randomNum === 8 && left && !left.isObstacle) // left
-            {
-                this.farmzoids[i].y = col-1;
-                console.log("Farmzoid # " + i + " moving left");
-            }
-            else {
-                console.log("Farmzoid # " + i + " tried to move to invalid cell");
-                i--;    // Redo for that bot
-            }
-        }
+            // randomNum = Math.floor((Math.random() * 8) + 1);  // 1 - 8
+            // row = this.farmzoids[i].x;
+            // col = this.farmzoids[i].y;
+
+            // topLeft     = grid[index(row-1, col-1)];    // 1
+            // top         = grid[index(row-1, col)];      // 2
+            // topRight    = grid[index(row-1, col+1)];    // 3
+            // right       = grid[index(row, col+1)];      // 4
+            // bottomRight = grid[index(row+1, col+1)];    // 5
+            // bottom      = grid[index(row+1, col)];      // 6
+            // bottomLeft  = grid[index(row+1, col-1)];    // 7
+            // left        = grid[index(row, col-1)];      // 8
+
+            // // Check for move location, valid cell, and if it's not an obstacle
+            // if(randomNum === 1 && topLeft && !topLeft.isObstacle) // top left
+            // {
+            //     // console.log("Farmzoid # " + i + " moving top left");
+            //     // console.log("before : " + this.farmzoids[i].x + ", " + this.farmzoids[i].y);
+            //     this.farmzoids[i].x = row-1;   // Change farmzoids X, Y position
+            //     this.farmzoids[i].y = col-1;
+            //     //console.log("after : " + this.farmzoids[i].x + ", " + this.farmzoids[i].y);
+            // }
+            // else if(randomNum === 2 && top && !top.isObstacle)     // top
+            // {
+            //     this.farmzoids[i].x = row-1;
+            //     console.log("Farmzoid # " + i + " moving top");
+            // }
+            // else if(randomNum === 3 && topRight && !topRight.isObstacle) // top right
+            // {
+            //     this.farmzoids[i].x = row-1;
+            //     this.farmzoids[i].y = col+1;
+            //     console.log("Farmzoid # " + i + " moving top right");
+            // }
+            // else if(randomNum === 4 && right && !right.isObstacle) // right
+            // {
+            //     this.farmzoids[i].y = col+1;
+            //     console.log("Farmzoid # " + i + " moving right");
+            // }
+            // else if(randomNum === 5 && bottomRight && !bottomRight.isObstacle) // bottom right
+            // {
+            //     this.farmzoids[i].x = row+1;
+            //     this.farmzoids[i].y = col+1;
+            //     console.log("Farmzoid # " + i + " moving bottom right");
+            // }
+            // else if(randomNum === 6 && bottom && !bottom.isObstacle) // bottom 
+            // {
+            //     this.farmzoids[i].x = row+1;
+            //     console.log("Farmzoid # " + i + " moving bottom left");
+            // }
+            // else if(randomNum === 7 && bottomLeft && !bottomLeft.isObstacle) //bottom left
+            // {
+            //     this.farmzoids[i].x = row+1;
+            //     this.farmzoids[i].y = col-1;
+            //     console.log("Farmzoid # " + i + " moving bottom left");
+            // }
+            // else if(randomNum === 8 && left && !left.isObstacle) // left
+            // {
+            //     this.farmzoids[i].y = col-1;
+            //     console.log("Farmzoid # " + i + " moving left");
+            // }
+            // else {
+            //     console.log("Farmzoid # " + i + " tried to move to invalid cell");
+            //     i--;    // Redo for that bot
+            // }
+            
+        } // End for loop
+        
     }
 
     // Color farmzoids
@@ -707,6 +820,12 @@ function setup() // P5 Setup Fcn
             grid.push(cell);            // Push into list
         }
     }
+
+    // TESTING goals... Delete later!!!!!!
+    workingmem.farmzoids[0].setGoal(13, 8);
+    workingmem.farmzoids[1].setGoal(32, 19);
+    workingmem.farmzoids[2].setGoal(39, 39);
+    workingmem.farmzoids[3].setGoal(39, 0);
 
 
     // Change framerate speed

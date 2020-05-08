@@ -13,6 +13,7 @@ class Cell {
         this.col = col;             // Col number
         this.color = "";            // Color of cell (red, black, purple...)
         this.isObstacle = false;
+        this.heur_val = 0;
     }
 
     // Fill cells
