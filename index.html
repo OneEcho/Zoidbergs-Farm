@@ -455,7 +455,19 @@ poor.
 
 </script>
 
+<div id="console">
 
+</div>
 
+<script type="text/javascript">
+  function log(msg) {
+    var cons = document.getElementById("console");
+    let para = document.createElement("p");
+    let txt = document.createTextNode(msg);
+
+    para.appendChild(txt);
+    cons.appendChile(para);
+  }
+</script>
 
 </html>
