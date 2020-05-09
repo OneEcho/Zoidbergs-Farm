@@ -361,17 +361,17 @@ class Farmzoid {
     }
     */
 
-    doTask(plantPlot) {
-        if(plantPlot.x === this.x && plantPlot.y === this.y && plantPlot.plant != null) {
-            currPlot.doPlotTask();
+    doTask() {
+        if(this.task.plotLocation.y === this.x && this.task.plotLocation.x === this.y && this.task.plotLocation.plant != null) {
+            this.task.plotLocation.doPlotTask(this.task);
             this.task.taskCompleted = true;
             this.task.taskAssigned = false;
             dailyTaskCount++;
             this.hasTask = false;
             console.log(this.task.taskName + " completed");
         }
-        if(platPlot.x === this.x && plantPlot.y === this.y && plantPlot.plant == null) {
-            plantPlot.plant.doPlantTask();
+        if(this.task.plotLocation.y === this.x && this.task.plotLocation.x === this.y && this.task.plotLocation.plant == null) {
+            this.task.plant.doPlantTask();
             this.task.taskCompleted = true;
             this.task.taskAssigned = false;
             dailyTaskCount++;
@@ -407,56 +407,56 @@ class Farmzoid {
             topLeft.heur_val = heur_val(row-1, col-1, this.goal_row, this.goal_col);      // Generate h(n)
             validHerusitics.push(topLeft.heur_val);                                        // Add to valid heuristic values
             neighbors.push(topLeft);
-            console.log("top left");
+//            console.log("top left");
         }
         // Top
         if(top && top.isObstacle === false) {
             top.heur_val = heur_val(row-1, col, this.goal_row, this.goal_col);          // Generate h(n)
             validHerusitics.push(top.heur_val);                                          // Add to valid heuristic values
             neighbors.push(top);
-            console.log("top");
+//            console.log("top");
         }
         // Top right
         if(topRight && topRight.isObstacle === false) {
             topRight.heur_val = heur_val(row-1, col+1, this.goal_row, this.goal_col);      // Generate h(n)
             validHerusitics.push(topRight.heur_val);                                           // Add to valid heuristic values
             neighbors.push(topRight);
-            console.log("top right");
+//            console.log("top right");
         }
         // Right
         if(right && right.isObstacle === false) {
             right.heur_val = heur_val(row, col+1, this.goal_row, this.goal_col);        // Generate h(n)
             validHerusitics.push(right.heur_val);                                              // Add to valid heuristic values
             neighbors.push(right);
-            console.log("right");
+//            console.log("right");
         }
         // Bottom right
         if(bottomRight && bottomRight.isObstacle === false) {
             bottomRight.heur_val = heur_val(row+1, col+1, this.goal_row, this.goal_col);      // Generate h(n)
             validHerusitics.push(bottomRight.heur_val);                                           // Add to valid heuristic values
             neighbors.push(bottomRight);
-            console.log("bottom right");
+//            console.log("bottom right");
         }
         // Bottom
         if(bottom && bottom.isObstacle === false) {
             bottom.heur_val = heur_val(row+1, col, this.goal_row, this.goal_col);      // Generate h(n)
             validHerusitics.push(bottom.heur_val);                                         // Add to valid heuristic values
             neighbors.push(bottom);
-            console.log("bottom");
+//            console.log("bottom");
         }
         // Bottom left
         if(bottomLeft && bottomLeft.isObstacle === false) {
             bottomLeft.heur_val = heur_val(row+1, col-1, this.goal_row, this.goal_col);      // Generate h(n)
             validHerusitics.push(bottomLeft.heur_val);                                            // Add to valid heuristic values
             neighbors.push(bottomLeft);
-            console.log("bottom left");
+//            console.log("bottom left");
         }
         // Left
         if(left && left.isObstacle === false) {
             left.heur_val = heur_val(row, col-1, this.goal_row, this.goal_col);      // Generate h(n)
             validHerusitics.push(left.heur_val);                                          // Add to valid heuristic values
             neighbors.push(left);
-            console.log("left");
+//            console.log("left");
         }
 
         // Pushes the cell with the lowest Heuristic value into neighbors list
@@ -606,11 +606,9 @@ class WorkingMem{
     }
 
     generateTasks() {
-        this.taskList = [];
         for(let i = 0; i < 20; i++) {
                 if(validPlots[i].hasPlot === false){
                 // fms.addTasks(new Task("place plot", validPlots[i], "plot equipment"));
-                    console.log("\tadding task to place plot");
                     this.taskList.push(new Task("place plot", validPlots[i], "plot equipment"));
                 } else {
                     if(validPlots[i].plant.plantType === null) {
@@ -631,14 +629,16 @@ class WorkingMem{
                     }
                 }
         }
-        console.log(this.taskList);
+        console.log("\ttask list: " + this.taskList);
     }
 
     assignTasks() {
         for(let i = 0; i < 4; i++) {
-            if(this.farmzoids.hasTask === false){
-                this.farmzoids[i].setTask(taskList.pop());
-                console.log(this.farmzoids[i].task);
+            if(this.farmzoids[i].hasTask === false){
+                this.farmzoids[i].setTask(this.taskList.pop());
+                this.farmzoids[i].setGoal(this.farmzoids[i].task.plotLocation.y, this.farmzoids[i].task.plotLocation.x);
+                console.log("coords:" + this.farmzoids[i].task.plotLocation.x + ", " + this.farmzoids[i].task.plotLocation.y);
+                console.log("task " + this.farmzoids[i].task.taskName + " assigned to bot " + i);
             }
         }
     }
@@ -663,8 +663,8 @@ class WorkingMem{
                 // Update new position to move from heuristic 
                 this.farmzoids[i].x = next.row; 
                 this.farmzoids[i].y = next.col;
-                console.log("current: " + this.farmzoids[i].x + " " + this.farmzoids[i].y);
-                console.log("next: " + next.row + " " + next.col);
+//                console.log("current: " + this.farmzoids[i].x + " " + this.farmzoids[i].y);
+//                console.log("next: " + next.row + " " + next.col);
 
                 // Redraw bot
                 grid[index(this.farmzoids[i].x, this.farmzoids[i].y)].show_farmzoid(this.farmzoids[i].color);
@@ -679,7 +679,7 @@ class WorkingMem{
             let x = workingmem.farmzoids[i].x;
             let y = workingmem.farmzoids[i].y;
             let color = workingmem.farmzoids[i].color;
-            console.log("Farmzoid # " + i + " at " + x + ", " + y);
+//            console.log("Farmzoid # " + i + " at " + x + ", " + y);
             grid[index(x, y)].show_farmzoid(color);
         }
     }
@@ -840,7 +840,12 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
         if(workingmem.taskList.length === 0) {
             workingmem.generateTasks();
         }
-        workingmem.assignTasks();
+    }
+
+    workingmem.assignTasks();
+
+    for(let j = 0; j < workingmem.farmzoids.length; j++) {
+        workingmem.farmzoids[j].doTask()
     }
 
     
