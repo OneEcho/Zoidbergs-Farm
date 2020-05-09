@@ -303,7 +303,6 @@ class Farmzoid {
     setTask(task) {
         this.task = task;
         this.hasTask = true
-        console.log(this.task);
     }
 
     /*
@@ -427,34 +426,6 @@ class FMS {
             }
         }
     }
-
-    /*
-    addTasks(task) {
-        if(this.taskCount <= 200) {
-            this.taskList.push(task);
-            this.taskCount++;
-        }
-        else {
-            this.checkNewDay();
-        }
-    }
-    */
-
-    /*
-    checkNewDay() {
-        if(this.taskCount === 200) {
-            console.log("Task count is 200 ... Starting new day");
-            this.taskList.clear;
-            this.taskCount = 0;
-            console.log("Day: "  + this.dayCounter);
-
-            if(this.dayCounter <= 40) { 
-                alert("Day 40 reached!");
-            }
-            this.dayCounter++;
-        }
-    }
-    */
 }
 
 
@@ -491,7 +462,7 @@ class WorkingMem{
         this.farmzoids = [new Farmzoid(21, 19, "green"), new Farmzoid(17, 19, "blue"), new Farmzoid(19, 21, "pink"), new Farmzoid(19, 17, "yellow")];
     }
 
-    setupTasks() {
+    generateTasks() {
         for(let j = 0; j < 4; j++){
             if(this.farmzoids[j].hasTask === false) {
                 for(let i = 0; i < 20; i++) {
@@ -595,10 +566,6 @@ class WorkingMem{
                 i--;    // Redo for that bot
             }
         }
-    }
-
-    drawFarmZoids() {
-
     }
 
     drawGrid() {
@@ -714,12 +681,10 @@ function setup() // P5 Setup Fcn
         }
     }
 
-
     // Change framerate speed
     frameRate(1)
     //do_btn( ); 
 }
-
 
 // Main farm loop?
 function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
@@ -741,12 +706,11 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
 
     if(dailyTaskCount === 50) {
         mainDayCount++;
-        console.log("it's a new day, day#: " + mainDayCount)
+        console.log("\tit's a new day, day " + mainDayCount)
         dailyTaskCount = 0;
         workingmem.fms.natureEffects();
-        workingmem.setupTasks();
     }
-
+    workingmem.generateTasks();
     
     // Update daily nature changes
 
@@ -754,9 +718,6 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
 
     workingmem.checkNeighbors();
 }
-
-
-
 
 /*******************************************************************************************************************
 
