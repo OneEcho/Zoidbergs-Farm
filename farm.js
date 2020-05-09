@@ -683,17 +683,6 @@ class WorkingMem{
             let y = riverLocations[i][1];
             grid[index(x, y)].show_river();
         }
-        // let iy = 25
-        // let sz = g_canvas.cell_size;
-        // for(let ix = 1; ix <= 15; ix++)
-        // {
-        //     if(ix < 16 && iy < 39)
-        //     {
-        //         grid[index(ix, iy)].show_river();
-        //         grid[index(ix+1, iy)].show_river();
-        //         iy++;
-        //     }
-        // }
 
         // Color cave
         for(let x = 26; x < 30; x++) {
@@ -784,7 +773,7 @@ function setup() // P5 Setup Fcn
     cols = floor(width/sz)
     rows = floor(height/sz)
 
-    g_cnv = createCanvas( width, height );  // Make a P5 canvas.
+    g_cnv = createCanvas(width, height);  // Make a P5 canvas.
     console.log("\tcreateCanvas()" );
 
     for(let i = 0; i < rows; i++) {
