@@ -333,14 +333,9 @@ class Plot {
         if(task.taskName === "place plot") {
             this.hasPlot = true;
         }
-        if(task.taskName === "plant seed") {
-            this.plant= task.equipment;
+        if(task.taskName === "plant seed" && this.hasPlot === true) {
+            this.plant.plantType = task.equipment;
         }
-    }
-
-    // call this when farmzoid plants a seed
-    plantSeed(plant) {
-        this.plant = plant;
     }
 }
 
@@ -399,7 +394,8 @@ class Farmzoid {
     */
 
     doTask() {
-        if(this.task.plotLocation.y === this.x && this.task.plotLocation.x === this.y && this.task.plotLocation.plant != null) {
+        if(this.task.plotLocation.y === this.x && this.task.plotLocation.x === this.y) {
+            console.log("doPlotTask()");
             this.task.plotLocation.doPlotTask(this.task);
             this.task.taskCompleted = true;
             this.task.taskAssigned = false;
@@ -407,8 +403,9 @@ class Farmzoid {
             this.hasTask = false;
             console.log(this.task.taskName + " completed");
         }
-        if(this.task.plotLocation.y === this.x && this.task.plotLocation.x === this.y && this.task.plotLocation.plant == null) {
-            this.task.plant.doPlantTask();
+        if(this.task.plotLocation.y === this.x && this.task.plotLocation.x === this.y && this.task.plotLocation.plot != null) {
+            console.log("doPlantTask()");
+            this.task.plotLocation.plant.doPlantTask();
             this.task.taskCompleted = true;
             this.task.taskAssigned = false;
             dailyTaskCount++;
@@ -653,12 +650,8 @@ class WorkingMem{
                 if(validPlots[i].hasPlot === false){
                 // fms.addTasks(new Task("place plot", validPlots[i], "plot equipment"));
                     this.taskList.push(new Task("place plot", validPlots[i], "plot equipment"));
-                } else {
-                    if(validPlots[i].plant.plantType === null) {
-                        console.log("\tadding task to plant seed");
-                        this.taskList.push(new Task("plant seed", validPlots[i], "apple"));
-                    }
-                    else if(validPlots[i].plant.fertilized === false){
+                } else if(validPlots[i].plant != null) {
+                    if(validPlots[i].plant.fertilized === false){
                         this.taskList.push(new Task("fertilize", validPlots[i], "fertilizer"));
                     }
                     else if(validPlots[i].plant.fertilized === true && validPlots[i].plant.waterReserve <= 3) {
@@ -670,8 +663,12 @@ class WorkingMem{
                     else if(validPlots[i].plant.fruitingState === "red" && validPlots[i].plant.waterReserve > 0 && validPlots[i].plant.waterReserve <=3) {
                         this.taskList.push(new Task("harvest", validPlots[i], "barrel"));
                     }
+                } else {
+                    console.log("\tadding task to plant seed");
+                    this.taskList.push(new Task("plant seed", validPlots[i], "apple"));
                 }
-        }
+            }
+        
         console.log("\ttask list: " + this.taskList);
     }
 
@@ -679,9 +676,9 @@ class WorkingMem{
         for(let i = 0; i < 4; i++) {
             if(this.farmzoids[i].hasTask === false){
                 this.farmzoids[i].setTask(this.taskList.pop());
-                this.farmzoids[i].setGoal(this.farmzoids[i].task.plotLocation.y, this.farmzoids[i].task.plotLocation.x);
                 console.log("coords:" + this.farmzoids[i].task.plotLocation.x + ", " + this.farmzoids[i].task.plotLocation.y);
                 console.log("task " + this.farmzoids[i].task.taskName + " assigned to bot " + i);
+                this.farmzoids[i].setGoal(this.farmzoids[i].task.plotLocation.y, this.farmzoids[i].task.plotLocation.x);
             }
         }
     }
@@ -859,7 +856,7 @@ function setup() // P5 Setup Fcn
     workingmem.drawFarmZoids();
 
     // Change framerate speed
-    frameRate(2);
+    frameRate(10);
     //do_btn( ); 
 }
 
@@ -878,15 +875,16 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
         console.log("\tit's a new day, day " + mainDayCount)
         dailyTaskCount = 0;
         workingmem.fms.natureEffects();
-        if(workingmem.taskList.length === 0) {
-            workingmem.generateTasks();
-        }
+
     }
 
-    workingmem.assignTasks();
-
-    for(let j = 0; j < workingmem.farmzoids.length; j++) {
-        workingmem.farmzoids[j].doTask()
+    if(workingmem.taskList.length === 0) {
+        workingmem.generateTasks();
+    } else {
+        workingmem.assignTasks();
+        for(let j = 0; j < workingmem.farmzoids.length; j++) {
+            workingmem.farmzoids[j].doTask()
+        }
     }
 
     
