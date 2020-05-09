@@ -18,8 +18,9 @@
       <h1>Farmzoids CPSC 481 Project 2</h1>   
       <p> by Canyon Schwartz, Nathan Nhek, Will Clemons, and Liam Fitzpatrick</p>
     </div>   
-    <div>
+    <div style="width: 300px; float: right; border: 1px solid #000; margin-right: 200px; height: 800px; overflow-y: scroll" id="console">
       <!--- Show output to screen, update using innertext-->
+      console
       <h1 id=dayCount></h1>
       <h1 id=weather></h1>
       <h1 id=tasks></h1>
@@ -458,6 +459,20 @@ poor.
 
 </script>
 
+<script type="text/javascript">
+  let console = {};
+  let log = document.getElementById("console");
+  console.log = text =>
+  {
+    let elem = document.createElement("div");
+    let txt = document.createTextNode(text);
+
+    elem.appendChild(txt);
+    log.appendChild(elem);
+    log.scrollTop = log.scrollHeight;
+  }
+  
+</script>
 
 
 
