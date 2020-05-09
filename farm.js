@@ -288,7 +288,7 @@ class Plot {
         this.x = x;
         this.y = y;
         this.plant = new Plant();
-        this.hasPlot = true;
+        this.hasPlot = false;
         this.taskDone = null;
     }
 
@@ -350,7 +350,7 @@ class Farmzoid {
 
     setTask(task) {
         this.task = task;
-        this.hasTask = true
+        this.hasTask = true;
     }
 
     /*
@@ -361,17 +361,19 @@ class Farmzoid {
     }
     */
 
-    doTask(plantPlot) {
-        if(plantPlot.x === this.x && plantPlot.y === this.y && plantPlot.plant != null) {
-            currPlot.doPlotTask();
+    doTask() {
+        if(this.task.plotLocation.y === this.x && this.task.plotLocation.x === this.y && this.task.plotLocation.plant != null) {
+            this.task.plotLocation.doPlotTask(this.task);
             this.task.taskCompleted = true;
+            this.task.taskAssigned = false;
             dailyTaskCount++;
             this.hasTask = false;
             console.log(this.task.taskName + " completed");
         }
-        if(platPlot.x === this.x && plantPlot.y === this.y && plantPlot.plant == null) {
-            plantPlot.plant.doPlantTask();
+        if(this.task.plotLocation.y === this.x && this.task.plotLocation.x === this.y && this.task.plotLocation.plant == null) {
+            this.task.plant.doPlantTask();
             this.task.taskCompleted = true;
+            this.task.taskAssigned = false;
             dailyTaskCount++;
             this.hasTask = false;
             console.log(this.task.taskName + " completed");
@@ -405,56 +407,56 @@ class Farmzoid {
             topLeft.heur_val = heur_val(row-1, col-1, this.goal_row, this.goal_col);      // Generate h(n)
             validHerusitics.push(topLeft.heur_val);                                        // Add to valid heuristic values
             neighbors.push(topLeft);
-            console.log("top left");
+//            console.log("top left");
         }
         // Top
         if(top && top.isObstacle === false) {
             top.heur_val = heur_val(row-1, col, this.goal_row, this.goal_col);          // Generate h(n)
             validHerusitics.push(top.heur_val);                                          // Add to valid heuristic values
             neighbors.push(top);
-            console.log("top");
+//            console.log("top");
         }
         // Top right
         if(topRight && topRight.isObstacle === false) {
             topRight.heur_val = heur_val(row-1, col+1, this.goal_row, this.goal_col);      // Generate h(n)
             validHerusitics.push(topRight.heur_val);                                           // Add to valid heuristic values
             neighbors.push(topRight);
-            console.log("top right");
+//            console.log("top right");
         }
         // Right
         if(right && right.isObstacle === false) {
             right.heur_val = heur_val(row, col+1, this.goal_row, this.goal_col);        // Generate h(n)
             validHerusitics.push(right.heur_val);                                              // Add to valid heuristic values
             neighbors.push(right);
-            console.log("right");
+//            console.log("right");
         }
         // Bottom right
         if(bottomRight && bottomRight.isObstacle === false) {
             bottomRight.heur_val = heur_val(row+1, col+1, this.goal_row, this.goal_col);      // Generate h(n)
             validHerusitics.push(bottomRight.heur_val);                                           // Add to valid heuristic values
             neighbors.push(bottomRight);
-            console.log("bottom right");
+//            console.log("bottom right");
         }
         // Bottom
         if(bottom && bottom.isObstacle === false) {
             bottom.heur_val = heur_val(row+1, col, this.goal_row, this.goal_col);      // Generate h(n)
             validHerusitics.push(bottom.heur_val);                                         // Add to valid heuristic values
             neighbors.push(bottom);
-            console.log("bottom");
+//            console.log("bottom");
         }
         // Bottom left
         if(bottomLeft && bottomLeft.isObstacle === false) {
             bottomLeft.heur_val = heur_val(row+1, col-1, this.goal_row, this.goal_col);      // Generate h(n)
             validHerusitics.push(bottomLeft.heur_val);                                            // Add to valid heuristic values
             neighbors.push(bottomLeft);
-            console.log("bottom left");
+//            console.log("bottom left");
         }
         // Left
         if(left && left.isObstacle === false) {
             left.heur_val = heur_val(row, col-1, this.goal_row, this.goal_col);      // Generate h(n)
             validHerusitics.push(left.heur_val);                                          // Add to valid heuristic values
             neighbors.push(left);
-            console.log("left");
+//            console.log("left");
         }
 
         // Pushes the cell with the lowest Heuristic value into neighbors list
@@ -600,37 +602,44 @@ class WorkingMem{
         this.fms = fms;
         this.farmzoids = [new Farmzoid(21, 19, "green"), new Farmzoid(17, 19, "blue"), 
                           new Farmzoid(19, 21, "pink"), new Farmzoid(19, 17, "yellow")];
+        this.taskList = [];
     }
 
     generateTasks() {
-        for(let j = 0; j < 4; j++){
-            if(this.farmzoids[j].hasTask === false) {
-                for(let i = 0; i < 20; i++) {
-                    if(validPlots[i].hasPlot === false){
-                        // fms.addTasks(new Task("place plot", validPlots[i], "plot equipment"));
-                        this.farmzoids[j].setTask(new Task("place plot", validPlots[i], "plot equipment"));
-                    } else {
-                        if(validPlots[i].plant.plantType === null) {
-                            this.farmzoids[j].setTask(new Task("plant seed", validPlots[i], "apple"));
-                        }
-                        else if(validPlots[i].plant.fertilized === false){
-                            this.farmzoids[j].setTask(new Task("fertilize", validPlots[i], "fertilizer"));
-                        }
-                        else if(validPlots[i].plant.fertilized === true && validPlots[i].plant.waterReserve <= 3) {
-                            this.farmzoids[j].setTask(new Task("watering", validPlots[i], "water"));
-                        }
-                        else if(validPlots[i].plant.blight != null) {
-                            this.farmzoids[j].setTask(new Task("soaping", validPLots[i], "soap"));
-                        }
-                        else if(validPlots[i].plant.fruitingState === "red" && validPlots[i].plant.waterReserve > 0 && validPlots[i].plant.waterReserve <=3) {
-                            this.farmzoids[j].setTask(new Task("harvest", validPlots[i], "barrel"));
-                        }
+        for(let i = 0; i < 20; i++) {
+                if(validPlots[i].hasPlot === false){
+                // fms.addTasks(new Task("place plot", validPlots[i], "plot equipment"));
+                    this.taskList.push(new Task("place plot", validPlots[i], "plot equipment"));
+                } else {
+                    if(validPlots[i].plant.plantType === null) {
+                        console.log("\tadding task to plant seed");
+                        this.taskList.push(new Task("plant seed", validPlots[i], "apple"));
+                    }
+                    else if(validPlots[i].plant.fertilized === false){
+                        this.taskList.push(new Task("fertilize", validPlots[i], "fertilizer"));
+                    }
+                    else if(validPlots[i].plant.fertilized === true && validPlots[i].plant.waterReserve <= 3) {
+                        this.taskList.push(new Task("watering", validPlots[i], "water"));
+                    }
+                    else if(validPlots[i].plant.blight != null) {
+                        this.taskList.push(new Task("soaping", validPLots[i], "soap"));
+                    }
+                    else if(validPlots[i].plant.fruitingState === "red" && validPlots[i].plant.waterReserve > 0 && validPlots[i].plant.waterReserve <=3) {
+                        this.taskList.push(new Task("harvest", validPlots[i], "barrel"));
                     }
                 }
-            }   
         }
-        for(let i = 0; i < fms.taskList.length; ++i) {
+        console.log("\ttask list: " + this.taskList);
+    }
 
+    assignTasks() {
+        for(let i = 0; i < 4; i++) {
+            if(this.farmzoids[i].hasTask === false){
+                this.farmzoids[i].setTask(this.taskList.pop());
+                this.farmzoids[i].setGoal(this.farmzoids[i].task.plotLocation.y, this.farmzoids[i].task.plotLocation.x);
+                console.log("coords:" + this.farmzoids[i].task.plotLocation.x + ", " + this.farmzoids[i].task.plotLocation.y);
+                console.log("task " + this.farmzoids[i].task.taskName + " assigned to bot " + i);
+            }
         }
     }
 
@@ -654,8 +663,8 @@ class WorkingMem{
                 // Update new position to move from heuristic 
                 this.farmzoids[i].x = next.row; 
                 this.farmzoids[i].y = next.col;
-                console.log("current: " + this.farmzoids[i].x + " " + this.farmzoids[i].y);
-                console.log("next: " + next.row + " " + next.col);
+//                console.log("current: " + this.farmzoids[i].x + " " + this.farmzoids[i].y);
+//                console.log("next: " + next.row + " " + next.col);
 
                 // Redraw bot
                 grid[index(this.farmzoids[i].x, this.farmzoids[i].y)].show_farmzoid(this.farmzoids[i].color);
@@ -670,7 +679,7 @@ class WorkingMem{
             let x = workingmem.farmzoids[i].x;
             let y = workingmem.farmzoids[i].y;
             let color = workingmem.farmzoids[i].color;
-            console.log("Farmzoid # " + i + " at " + x + ", " + y);
+//            console.log("Farmzoid # " + i + " at " + x + ", " + y);
             grid[index(x, y)].show_farmzoid(color);
         }
     }
@@ -800,16 +809,16 @@ function setup() // P5 Setup Fcn
     }
 
     // TESTING goals... Delete later!!!!!!
-    workingmem.farmzoids[0].setGoal(0, 0);
-    workingmem.farmzoids[1].setGoal(39, 39);
-    workingmem.farmzoids[2].setGoal(39, 0);
-    workingmem.farmzoids[3].setGoal(0, 39);
+     workingmem.farmzoids[0].setGoal(0, 0);
+     workingmem.farmzoids[1].setGoal(39, 39);
+     workingmem.farmzoids[2].setGoal(39, 0);
+     workingmem.farmzoids[3].setGoal(0, 39);
 
     workingmem.drawGrid();
     workingmem.drawFarmZoids();
 
     // Change framerate speed
-    frameRate(1)
+    frameRate(0.5);
     //do_btn( ); 
 }
 
@@ -828,20 +837,18 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
         console.log("\tit's a new day, day " + mainDayCount)
         dailyTaskCount = 0;
         workingmem.fms.natureEffects();
+        if(workingmem.taskList.length === 0) {
+            workingmem.generateTasks();
+        }
     }
 
-    workingmem.generateTasks();
-    
-    let dayCount = 1;
-    console.log("current day:" + dayCount);
-    if(dayCount > workingmem.fms.dayCounter){
-        console.log("it's a new day")
-        workingmem.natureEffects();
-        workingmem.setupTasks();
-        workingmem.fms.checkNewDay();
-        dayCount = workingmem.fms.dayCounter;
-        console.log("new day is: " + dayCount)
+    workingmem.assignTasks();
+
+    for(let j = 0; j < workingmem.farmzoids.length; j++) {
+        workingmem.farmzoids[j].doTask()
     }
+
+    
     // Update daily nature changes
     // workingmem.fms.checkNewDay();
 
