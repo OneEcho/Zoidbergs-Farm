@@ -76,7 +76,7 @@ blight          : bApple, bCorn, bBerry, none
 *******************************************************************************************************************/
 class Nature {
     constructor() {
-        this.sky = "clear"; 
+        this.sky = "clear";
         this.wind = "N";
         this.temperature = "warm";
         this.blight = null;
@@ -90,15 +90,15 @@ class Nature {
         this.randBlight();  // RNG for blgiht
     }
 
-    randCloudy() { 
+    randCloudy() {
         console.log("randCloudy()");
         let rng = Math.floor((Math.random() * 10) + 1);  // 1 - 10, 10% chance of being cloudy
-        if(rng === 1) {
+        if (rng === 1) {
             console.log("\tSky is cloudy");
             this.sky = "cloudy";
 
             rng = Math.floor((Math.random() * 10) + 1);  // 1 - 10, 50% chance of raining when cloudy
-            if(rng <= 5) {
+            if (rng <= 5) {
                 console.log("\tSky is rainy");
                 this.sky = "rainy";
                 return "rainy";
@@ -110,13 +110,13 @@ class Nature {
         return false;
     }
 
-        
+
     randBlight() {
         console.log("randBlight()");
         let rng = Math.floor((Math.random() * 10) + 1);  // 1 - 10, 2% chance of having blight and stalling growth
         var blightType = ["corn", "berry", "apple"];
 
-        if(rng <= 2) {    
+        if (rng <= 2) {
             this.blight = blightType[Math.floor(Math.random() * blightType.length)];
             console.log("\tBlight occurred for " + this.blight);
             return this.blight;
@@ -168,16 +168,16 @@ class Plant {
         console.log("decrease age to " + this.age)
     }
 
-    doPlantTask() {
-        if(this.taskDone === "watering") {
+    doPlantTask(currTask) {
+        if (currTask.taskName === "water") {
             waterReserve++;
             console.log("plant watered")
         }
-        if(this.taskDone === "soaping") {
+        if (currTask.taskName === "soap") {
             this.plantBlight = null;
             console.log("blight fixed")
         }
-        if(this.taskDone === "fertilize") {
+        if (currTask.taskName === "fertilize") {
             this.fertilized = true;
             console.log("plant fertilized")
         }
@@ -186,57 +186,57 @@ class Plant {
     // do plant color change here
     updateGrowthCycle() {
         // Apple growth cycle
-        if(this.plantType === "apple" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 1 && this.growthCycle === "seed" && this.blight === null) {
+        if (this.plantType === "apple" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 1 && this.growthCycle === "seed" && this.blight === null) {
             this.growthCycle = "stalk"
             console.log("apple seed is now a stalk")
         }
-        if(this.plantType === "apple" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 4 && this.growthCycle === "stalk" && this.blight === null) {
+        if (this.plantType === "apple" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 4 && this.growthCycle === "stalk" && this.blight === null) {
             this.growthCycle = "bush"
             console.log("apple stalk is now a bush")
         }
-        if(this.plantType === "apple" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 10 && this.growthCycle === "bush" && this.blight === null) {
+        if (this.plantType === "apple" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 10 && this.growthCycle === "bush" && this.blight === null) {
             this.growthCycle = "flower"
             console.log("apple bush is now a flower")
         }
-        if(this.plantType === "apple" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 13 && this.growthCycle === "flower" && this.blight === null) {
+        if (this.plantType === "apple" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 13 && this.growthCycle === "flower" && this.blight === null) {
             this.growthCycle = "fruiting"
             this.fruitingState = "green"
             console.log("apple flower is now fruiting")
         }
 
         // Berry growth cycle
-        if(this.plantType === "berry" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 1 && this.growthCycle === "seed" && this.blight === null) {
+        if (this.plantType === "berry" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 1 && this.growthCycle === "seed" && this.blight === null) {
             this.growthCycle = "stalk"
             console.log("berry seed is now a stalk")
         }
-        if(this.plantType === "berry" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 4 && this.growthCycle === "stalk" && this.blight === null) {
+        if (this.plantType === "berry" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 4 && this.growthCycle === "stalk" && this.blight === null) {
             this.growthCycle = "bush"
             console.log("berry stalk is now bush")
         }
-        if(this.plantType === "berry" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 8 && this.growthCycle === "bush" && this.blight === null) {
+        if (this.plantType === "berry" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 8 && this.growthCycle === "bush" && this.blight === null) {
             this.growthCycle = "flower"
             console.log("berry bush is now flower")
         }
-        if(this.plantType === "berry" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 10 && this.growthCycle === "flower" && this.blight === null) {
+        if (this.plantType === "berry" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 10 && this.growthCycle === "flower" && this.blight === null) {
             this.growthCycle = "fruiting"
             this.fruitingState = "green"
             console.log("berry flower is now fruiting")
         }
 
         // Corn growth cycle
-        if(this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 1 && this.growthCycle === "seed" && this.blight === null) {
+        if (this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 1 && this.growthCycle === "seed" && this.blight === null) {
             this.growthCycle = "stalk"
             console.log("corn seed is now stalk")
         }
-        if(this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 3 && this.growthCycle === "stalk" && this.blight === null) {
+        if (this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 3 && this.growthCycle === "stalk" && this.blight === null) {
             this.growthCycle = "bush"
             console.log("corn stalk is now bush")
         }
-        if(this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 5 && this.growthCycle === "bush" && this.blight === null) {
+        if (this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 5 && this.growthCycle === "bush" && this.blight === null) {
             this.growthCycle = "flower"
             console.log("corn bush is now flower")
         }
-        if(this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 7 && this.growthCycle === "flower" && this.blight === null) {
+        if (this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 7 && this.growthCycle === "flower" && this.blight === null) {
             this.growthCycle = "fruiting"
             this.fruitingState = "green"
             console.log("corn flower is now fruiting")
@@ -246,19 +246,19 @@ class Plant {
     // do fruit color change here
     updateFruitingState() {
         // Apple Fruiting State
-        if(this.plantType === "apple" && this.waterReserve > 0 && this.waterReserve < 3 && this.age > 15 && this.fruitingState === "green" && this.blight === null) {
+        if (this.plantType === "apple" && this.waterReserve > 0 && this.waterReserve < 3 && this.age > 15 && this.fruitingState === "green" && this.blight === null) {
             this.fruitingState = "red"
             console.log("apple is now harvestable")
         }
 
         // Berry fruitying state
-        if(this.plantType === "berry" && this.waterReserve > 0 && this.waterReserve < 3 && this.age > 11 && this.fruitingState === "green" && this.blight === null) {
+        if (this.plantType === "berry" && this.waterReserve > 0 && this.waterReserve < 3 && this.age > 11 && this.fruitingState === "green" && this.blight === null) {
             this.fruitingState = "red"
             console.log("berry is now harvestable")
         }
 
         // Corn fruiting state
-        if(this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve < 3 && this.age > 8 && this.fruitingState === "green" && this.blight === null) {
+        if (this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve < 3 && this.age > 8 && this.fruitingState === "green" && this.blight === null) {
             this.fruitingState = "red"
             console.log("corn is now harvestable")
         }
@@ -266,7 +266,7 @@ class Plant {
 
     // do blight effect of cell here
     blightEffects(blight) {
-        if(blight === this.plantType) {
+        if (blight === this.plantType) {
             this.blight = blight
         }
     }
@@ -330,10 +330,10 @@ class Plot {
     }
 
     doPlotTask(task) {
-        if(task.taskName === "place plot") {
+        if (task.taskName === "place plot") {
             this.hasPlot = true;
         }
-        if(task.taskName === "plant seed" && this.hasPlot === true) {
+        if (task.taskName === "plant seed" && this.hasPlot === true) {
             this.plant.plantType = task.equipment;
         }
     }
@@ -362,7 +362,7 @@ class Farmzoid {
         this.barnX = 19;    // Know where the bar X,Y is
         this.barnY = 19;
         this.color = color; // Color of the farmzoid
-        this.plotLocations = plotLocations; // Know where the plot locations are
+        this.plotLocations = validPlots; // Know where the plot locations are
 
         this.goal_row = null;
         this.goal_col = null;
@@ -374,27 +374,13 @@ class Farmzoid {
         this.goal_col = goal_col;
     }
 
-    // OR ... Set the farmzoids goal based on the task given
-    setGoalFromTask() {
-        this.goal_row = task.row;   // Maybe not task.row, but plotLocation.row?
-        this.goal_col = task.col;
-    }
-
     setTask(task) {
         this.task = task;
         this.hasTask = true;
     }
 
-    /*
-    grabTask(task) {
-        if(this.x && this.y === this.barnX && this.barnY){
-            this.task = task;
-        }
-    }
-    */
-
     doTask() {
-        if(this.task.plotLocation.y === this.x && this.task.plotLocation.x === this.y) {
+        if (this.task.plotLocation.y === this.x && this.task.plotLocation.x === this.y) {
             console.log("doPlotTask()");
             this.task.plotLocation.doPlotTask(this.task);
             this.task.taskCompleted = true;
@@ -403,9 +389,9 @@ class Farmzoid {
             this.hasTask = false;
             console.log(this.task.taskName + " completed");
         }
-        if(this.task.plotLocation.y === this.x && this.task.plotLocation.x === this.y && this.task.plotLocation.plot != null) {
+        if (this.task.plotLocation.y === this.x && this.task.plotLocation.x === this.y && this.task.plotLocation.plant != null) {
             console.log("doPlantTask()");
-            this.task.plotLocation.plant.doPlantTask();
+            this.task.plotLocation.plant.doPlantTask(this.task);
             this.task.taskCompleted = true;
             this.task.taskAssigned = false;
             dailyTaskCount++;
@@ -426,61 +412,61 @@ class Farmzoid {
         col = this.y;
 
         // Index the grid and find the cell position
-        topLeft     = grid[index(row-1, col-1)];    
-        top         = grid[index(row-1, col)];     
-        topRight    = grid[index(row-1, col+1)];    
-        right       = grid[index(row, col+1)];     
-        bottomRight = grid[index(row+1, col+1)];    
-        bottom      = grid[index(row+1, col)];     
-        bottomLeft  = grid[index(row+1, col-1)];    
-        left        = grid[index(row, col-1)];     
+        topLeft = grid[index(row - 1, col - 1)];
+        top = grid[index(row - 1, col)];
+        topRight = grid[index(row - 1, col + 1)];
+        right = grid[index(row, col + 1)];
+        bottomRight = grid[index(row + 1, col + 1)];
+        bottom = grid[index(row + 1, col)];
+        bottomLeft = grid[index(row + 1, col - 1)];
+        left = grid[index(row, col - 1)];
 
         // If the cell is undefined and not an obstacle
         // Top left
-        if(topLeft && topLeft.isObstacle === false) {
-            topLeft.heur_val = heur_val(row-1, col-1, this.goal_row, this.goal_col);      // Generate h(n)
+        if (topLeft && topLeft.isObstacle === false) {
+            topLeft.heur_val = heur_val(row - 1, col - 1, this.goal_row, this.goal_col);      // Generate h(n)
             validHerusitics.push(topLeft.heur_val);                                        // Add to valid heuristic values
             neighbors.push(topLeft);
         }
         // Top
-        if(top && top.isObstacle === false) {
-            top.heur_val = heur_val(row-1, col, this.goal_row, this.goal_col);          // Generate h(n)
+        if (top && top.isObstacle === false) {
+            top.heur_val = heur_val(row - 1, col, this.goal_row, this.goal_col);          // Generate h(n)
             validHerusitics.push(top.heur_val);                                          // Add to valid heuristic values
             neighbors.push(top);
         }
         // Top right
-        if(topRight && topRight.isObstacle === false) {
-            topRight.heur_val = heur_val(row-1, col+1, this.goal_row, this.goal_col);      // Generate h(n)
+        if (topRight && topRight.isObstacle === false) {
+            topRight.heur_val = heur_val(row - 1, col + 1, this.goal_row, this.goal_col);      // Generate h(n)
             validHerusitics.push(topRight.heur_val);                                           // Add to valid heuristic values
             neighbors.push(topRight);
         }
         // Right
-        if(right && right.isObstacle === false) {
-            right.heur_val = heur_val(row, col+1, this.goal_row, this.goal_col);        // Generate h(n)
+        if (right && right.isObstacle === false) {
+            right.heur_val = heur_val(row, col + 1, this.goal_row, this.goal_col);        // Generate h(n)
             validHerusitics.push(right.heur_val);                                              // Add to valid heuristic values
             neighbors.push(right);
         }
         // Bottom right
-        if(bottomRight && bottomRight.isObstacle === false) {
-            bottomRight.heur_val = heur_val(row+1, col+1, this.goal_row, this.goal_col);      // Generate h(n)
+        if (bottomRight && bottomRight.isObstacle === false) {
+            bottomRight.heur_val = heur_val(row + 1, col + 1, this.goal_row, this.goal_col);      // Generate h(n)
             validHerusitics.push(bottomRight.heur_val);                                           // Add to valid heuristic values
             neighbors.push(bottomRight);
         }
         // Bottom
-        if(bottom && bottom.isObstacle === false) {
-            bottom.heur_val = heur_val(row+1, col, this.goal_row, this.goal_col);      // Generate h(n)
+        if (bottom && bottom.isObstacle === false) {
+            bottom.heur_val = heur_val(row + 1, col, this.goal_row, this.goal_col);      // Generate h(n)
             validHerusitics.push(bottom.heur_val);                                         // Add to valid heuristic values
             neighbors.push(bottom);
         }
         // Bottom left
-        if(bottomLeft && bottomLeft.isObstacle === false) {
-            bottomLeft.heur_val = heur_val(row+1, col-1, this.goal_row, this.goal_col);      // Generate h(n)
+        if (bottomLeft && bottomLeft.isObstacle === false) {
+            bottomLeft.heur_val = heur_val(row + 1, col - 1, this.goal_row, this.goal_col);      // Generate h(n)
             validHerusitics.push(bottomLeft.heur_val);                                            // Add to valid heuristic values
             neighbors.push(bottomLeft);
         }
         // Left
-        if(left && left.isObstacle === false) {
-            left.heur_val = heur_val(row, col-1, this.goal_row, this.goal_col);      // Generate h(n)
+        if (left && left.isObstacle === false) {
+            left.heur_val = heur_val(row, col - 1, this.goal_row, this.goal_col);      // Generate h(n)
             validHerusitics.push(left.heur_val);                                          // Add to valid heuristic values
             neighbors.push(left);
         }
@@ -635,46 +621,46 @@ nature          : Nature class to access current weather
 fms             : FMS class to access tasks
 farmzoid        : List of 4 bots
 *******************************************************************************************************************/
-class WorkingMem{
+class WorkingMem {
     constructor(nature, fms, validPlots) {
-        this.validPlots = validPlots; 
+        this.validPlots = validPlots;
         this.nature = nature;
         this.fms = fms;
-        this.farmzoids = [new Farmzoid(21, 19, "green"), new Farmzoid(17, 19, "blue"), 
-                          new Farmzoid(19, 21, "pink"), new Farmzoid(19, 17, "yellow")];
+        this.farmzoids = [new Farmzoid(21, 19, "green"), new Farmzoid(17, 19, "blue"),
+        new Farmzoid(19, 21, "pink"), new Farmzoid(19, 17, "yellow")];
         this.taskList = [];
     }
 
     generateTasks() {
-        for(let i = 0; i < 20; i++) {
-                if(validPlots[i].hasPlot === false){
+        for (let i = 0; i < 20; i++) {
+            if (validPlots[i].hasPlot === false) {
                 // fms.addTasks(new Task("place plot", validPlots[i], "plot equipment"));
-                    this.taskList.push(new Task("place plot", validPlots[i], "plot equipment"));
-                } else if(validPlots[i].plant != null) {
-                    if(validPlots[i].plant.fertilized === false){
-                        this.taskList.push(new Task("fertilize", validPlots[i], "fertilizer"));
-                    }
-                    else if(validPlots[i].plant.fertilized === true && validPlots[i].plant.waterReserve <= 3) {
-                        this.taskList.push(new Task("watering", validPlots[i], "water"));
-                    }
-                    else if(validPlots[i].plant.blight != null) {
-                        this.taskList.push(new Task("soaping", validPLots[i], "soap"));
-                    }
-                    else if(validPlots[i].plant.fruitingState === "red" && validPlots[i].plant.waterReserve > 0 && validPlots[i].plant.waterReserve <=3) {
-                        this.taskList.push(new Task("harvest", validPlots[i], "barrel"));
-                    }
-                } else {
-                    console.log("\tadding task to plant seed");
-                    this.taskList.push(new Task("plant seed", validPlots[i], "apple"));
+                this.taskList.push(new Task("place plot", validPlots[i], "plot equipment"));
+            } else if (validPlots[i].plant != null) {
+                if (validPlots[i].plant.fertilized === false) {
+                    this.taskList.push(new Task("fertilize", validPlots[i], "fertilizer"));
                 }
+                else if (validPlots[i].plant.fertilized === true && validPlots[i].plant.waterReserve <= 3) {
+                    this.taskList.push(new Task("watering", validPlots[i], "water"));
+                }
+                else if (validPlots[i].plant.blight != null) {
+                    this.taskList.push(new Task("soaping", validPLots[i], "soap"));
+                }
+                else if (validPlots[i].plant.fruitingState === "red" && validPlots[i].plant.waterReserve > 0 && validPlots[i].plant.waterReserve <= 3) {
+                    this.taskList.push(new Task("harvest", validPlots[i], "barrel"));
+                }
+            } else {
+                console.log("\tadding task to plant seed");
+                this.taskList.push(new Task("plant seed", validPlots[i], "apple"));
             }
-        
+        }
+
         console.log("\ttask list: " + this.taskList);
     }
 
     assignTasks() {
-        for(let i = 0; i < 4; i++) {
-            if(this.farmzoids[i].hasTask === false){
+        for (let i = 0; i < 4; i++) {
+            if (this.farmzoids[i].hasTask === false) {
                 this.farmzoids[i].setTask(this.taskList.pop());
                 console.log("coords:" + this.farmzoids[i].task.plotLocation.x + ", " + this.farmzoids[i].task.plotLocation.y);
                 console.log("task " + this.farmzoids[i].task.taskName + " assigned to bot " + i);
@@ -684,7 +670,7 @@ class WorkingMem{
     }
 
     // Randomly check for neighbors in all 8 directions?
-    checkNeighbors() { 
+    checkNeighbors() {
         console.log("checkNeighbors()");
         let randomNum;
         let row;
@@ -692,32 +678,32 @@ class WorkingMem{
         let top, topLeft, topRight, right, bottomRight, bottom, bottomLeft, left;
 
         // Check and calc best neighbors for all farmZoIDs
-        for(let i = 0; i < this.farmzoids.length; ++i) {
+        for (let i = 0; i < this.farmzoids.length; ++i) {
             let next = this.farmzoids[i].bestFS();  // Check all 8 adjacent cells
 
             // If valid cell
-            if(next) {
+            if (next) {
                 // Reset the current cell where bot is
                 //grid[index(this.farmzoids[i].x, this.farmzoids[i].y)].reset_farmzoidCell();    
-                
+
                 // Update new position to move from heuristic 
-                this.farmzoids[i].x = next.row; 
+                this.farmzoids[i].x = next.row;
                 this.farmzoids[i].y = next.col;
 
                 // Redraw bot
                 grid[index(this.farmzoids[i].x, this.farmzoids[i].y)].show_farmzoid(this.farmzoids[i].color);
             }
         } // End for loop
-        
+
     }
 
     // Color farmzoids
     drawFarmZoids() {
-        for(let i = 0; i < workingmem.farmzoids.length; ++i) {
+        for (let i = 0; i < workingmem.farmzoids.length; ++i) {
             let x = workingmem.farmzoids[i].x;
             let y = workingmem.farmzoids[i].y;
             let color = workingmem.farmzoids[i].color;
-//            console.log("Farmzoid # " + i + " at " + x + ", " + y);
+            //            console.log("Farmzoid # " + i + " at " + x + ", " + y);
             grid[index(x, y)].show_farmzoid(color);
         }
     }
@@ -726,27 +712,27 @@ class WorkingMem{
 
     drawGrid() {
         // Color the dirt
-        for(let i = 0; i < grid.length; i++) {
+        for (let i = 0; i < grid.length; i++) {
             grid[i].show_dirt();
         }
-        
+
         // Color the plots
-        for(let i = 0; i < plotLocations.length; i++) {
+        for (let i = 0; i < plotLocations.length; i++) {
             let x = plotLocations[i][1];
             let y = plotLocations[i][0];
             grid[index(x, y)].show_plots();
         }
 
         // Color river
-        for(let i = 0; i < riverLocations.length; i++) {
+        for (let i = 0; i < riverLocations.length; i++) {
             let x = riverLocations[i][0];
             let y = riverLocations[i][1];
             grid[index(x, y)].show_river();
         }
 
         // Color cave
-        for(let x = 26; x < 30; x++) {
-            for(let y = 14; y < 19; y++) {
+        for (let x = 26; x < 30; x++) {
+            for (let y = 14; y < 19; y++) {
                 grid[index(x, y)].show_cave();
             }
         }
@@ -760,7 +746,7 @@ class WorkingMem{
         grid[index(35, 11)].show_bridge();
         grid[index(35, 12)].show_bridge();
     }
-    
+
 }
 // End of Farm Objects
 
@@ -772,26 +758,26 @@ class WorkingMem{
 *******************************************************************************************************************/
 
 // set validPlots
-let validPlots =    [new Plot(plotLocations[0][0], plotLocations[0][1]), 
-                     new Plot(plotLocations[1][0], plotLocations[1][1]), 
-                     new Plot(plotLocations[2][0], plotLocations[2][1]), 
-                     new Plot(plotLocations[3][0], plotLocations[3][1]), 
-                     new Plot(plotLocations[4][0], plotLocations[4][1]),
-                     new Plot(plotLocations[5][0], plotLocations[5][1]),
-                     new Plot(plotLocations[6][0], plotLocations[6][1]),
-                     new Plot(plotLocations[7][0], plotLocations[7][1]),
-                     new Plot(plotLocations[8][0], plotLocations[8][1]),
-                     new Plot(plotLocations[9][0], plotLocations[9][1]),
-                     new Plot(plotLocations[10][0], plotLocations[10][1]),
-                     new Plot(plotLocations[11][0], plotLocations[11][1]),
-                     new Plot(plotLocations[12][0], plotLocations[12][1]),
-                     new Plot(plotLocations[13][0], plotLocations[13][1]),
-                     new Plot(plotLocations[14][0], plotLocations[14][1]),
-                     new Plot(plotLocations[15][0], plotLocations[15][1]),
-                     new Plot(plotLocations[16][0], plotLocations[16][1]),
-                     new Plot(plotLocations[17][0], plotLocations[17][1]),
-                     new Plot(plotLocations[18][0], plotLocations[18][1]),
-                     new Plot(plotLocations[19][0], plotLocations[19][1])];
+let validPlots = [new Plot(plotLocations[0][0], plotLocations[0][1]),
+new Plot(plotLocations[1][0], plotLocations[1][1]),
+new Plot(plotLocations[2][0], plotLocations[2][1]),
+new Plot(plotLocations[3][0], plotLocations[3][1]),
+new Plot(plotLocations[4][0], plotLocations[4][1]),
+new Plot(plotLocations[5][0], plotLocations[5][1]),
+new Plot(plotLocations[6][0], plotLocations[6][1]),
+new Plot(plotLocations[7][0], plotLocations[7][1]),
+new Plot(plotLocations[8][0], plotLocations[8][1]),
+new Plot(plotLocations[9][0], plotLocations[9][1]),
+new Plot(plotLocations[10][0], plotLocations[10][1]),
+new Plot(plotLocations[11][0], plotLocations[11][1]),
+new Plot(plotLocations[12][0], plotLocations[12][1]),
+new Plot(plotLocations[13][0], plotLocations[13][1]),
+new Plot(plotLocations[14][0], plotLocations[14][1]),
+new Plot(plotLocations[15][0], plotLocations[15][1]),
+new Plot(plotLocations[16][0], plotLocations[16][1]),
+new Plot(plotLocations[17][0], plotLocations[17][1]),
+new Plot(plotLocations[18][0], plotLocations[18][1]),
+new Plot(plotLocations[19][0], plotLocations[19][1])];
 
 var nature = new Nature();
 var fms = new FMS(1, validPlots);
@@ -817,14 +803,14 @@ var g_stop; // Go by default.
 var g_cnv;   // To hold a P5 canvas.
 var g_button; // btn
 var g_button2; // btn
-var g_l4job = { id:1 }; // Put Lisp stuff for JS-to-access in ob; id to make ob.
+var g_l4job = { id: 1 }; // Put Lisp stuff for JS-to-access in ob; id to make ob.
 var grid = [];
 var frameCounter = 0;
 
 function setup() // P5 Setup Fcn
 {
-    console.log( "setup()");
-    g_canvas = { cell_size:20, wid:40, hgt:40 };
+    console.log("setup()");
+    g_canvas = { cell_size: 20, wid: 40, hgt: 40 };
     g_frame_cnt = 0; // Setup a P5 display-frame counter, to do anim
     g_frame_mod = 24; // Update ever 'mod' frames.
     g_stop = 0;     // Go by default.
@@ -833,24 +819,24 @@ function setup() // P5 Setup Fcn
     let width = sz * g_canvas.wid;  // Our 'canvas' uses cells of given size, not 1x1.
     let height = sz * g_canvas.hgt;
 
-    cols = floor(width/sz)
-    rows = floor(height/sz)
+    cols = floor(width / sz)
+    rows = floor(height / sz)
 
     g_cnv = createCanvas(width, height);  // Make a P5 canvas.
-    console.log("\tcreateCanvas()" );
+    console.log("\tcreateCanvas()");
 
-    for(let i = 0; i < rows; i++) {
-        for(let j = 0; j < cols; j++) {
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
             let cell = new Cell(i, j);  // Create new cell with x, y coords
             grid.push(cell);            // Push into list
         }
     }
 
     // TESTING goals... Delete later!!!!!!
-     workingmem.farmzoids[0].setGoal(0, 0);
-     workingmem.farmzoids[1].setGoal(39, 39);
-     workingmem.farmzoids[2].setGoal(39, 0);
-     workingmem.farmzoids[3].setGoal(0, 39);
+    workingmem.farmzoids[0].setGoal(0, 0);
+    workingmem.farmzoids[1].setGoal(39, 39);
+    workingmem.farmzoids[2].setGoal(39, 0);
+    workingmem.farmzoids[3].setGoal(0, 39);
 
     workingmem.drawGrid();
     workingmem.drawFarmZoids();
@@ -870,7 +856,7 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
     workingmem.drawGrid();          // Draw grid
     workingmem.checkNeighbors();    // Draw farmzoids
 
-    if(dailyTaskCount === 50) {
+    if (dailyTaskCount === 50) {
         mainDayCount++;
         console.log("\tit's a new day, day " + mainDayCount)
         dailyTaskCount = 0;
@@ -878,16 +864,16 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
 
     }
 
-    if(workingmem.taskList.length === 0) {
+    if (workingmem.taskList.length === 0) {
         workingmem.generateTasks();
     } else {
         workingmem.assignTasks();
-        for(let j = 0; j < workingmem.farmzoids.length; j++) {
+        for (let j = 0; j < workingmem.farmzoids.length; j++) {
             workingmem.farmzoids[j].doTask()
         }
     }
 
-    
+
     // Update daily nature changes
     // workingmem.fms.checkNewDay();
 
