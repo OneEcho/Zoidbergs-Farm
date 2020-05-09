@@ -1,7 +1,7 @@
 // farm.js
 // Farm objects
 
-let plotLocations = [
+const plotLocations = [
     [8, 13],    // plot 1
     [8, 10],    // plot 2
     [11, 13],   // plot 3
@@ -24,7 +24,37 @@ let plotLocations = [
     [32, 19]    // plot 20
 ];
 
-let barnLocation = {x: 19, y: 19};
+const riverLocations = [
+    [25, 1], [25, 2],
+    [26, 2], [26, 3],
+    [27, 3], [27, 4],
+    [28, 4], [28, 5],
+    [29, 5], [29, 6],
+    [30, 6], [30, 7],
+    [31, 7], [31, 8],
+    [32, 8], [32, 9],
+    [33, 9], [33, 10],
+    [34, 10], [34, 11],
+    [35, 11], [35, 12],
+    [36, 12], [36, 13],
+    [37, 13], [37, 14],
+    [38, 14], [38, 15],
+];
+
+
+const barnLocation = {x: 19, y: 19};
+
+const plantStageColors = {
+    yellowPlantColor: "#d9cf14",
+    brownPlantColor: "#61390f",
+    deadPlantColor: "#0a0602"
+};
+
+function heur_val(row, col, goal_row, goal_col){
+    return Math.abs(row - goal_row) + Math.abs(col - goal_col)
+}
+
+
 
 /*******************************************************************************************************************
  Nature Class -- defines nature effects
@@ -106,6 +136,7 @@ y               : y-coord
 *******************************************************************************************************************/
 class Plant {
     constructor() {
+
         this.plantType = null; 
         this.growthCycle = "seed";
         this.waterReserve = 0;
@@ -114,6 +145,7 @@ class Plant {
         this.blight = null;
         this.taskDone = null;
         this.age = 0;
+        this.plantColor = null  // RGB color value
     }
 
     incrementAge() {
@@ -288,9 +320,10 @@ plotLocations   : list of coords of valid plots
 *******************************************************************************************************************/
 class Farmzoid {
     constructor(x, y, color) {
-        this.taskCounter = 0;   // up to 50 tasks
-        this.task = null;
-        this.hasTask = false;
+        this.taskCounter = 0;     // up to 50 tasks
+        this.task = null;         // Assign a task object
+        this.hasTask = false;     // Done a task yet?
+
         this.equipment = null;
         this.x = x;         // X position
         this.y = y;         // Y position
@@ -298,6 +331,21 @@ class Farmzoid {
         this.barnY = 19;
         this.color = color; // Color of the farmzoid
         this.plotLocations = plotLocations; // Know where the plot locations are
+
+        this.goal_row = null;
+        this.goal_col = null;
+    }
+
+    // Set the farmzoids goal 
+    setGoal(goal_row, goal_col) {
+        this.goal_row = goal_row;
+        this.goal_col = goal_col;
+    }
+
+    // OR ... Set the farmzoids goal based on the task given
+    setGoalFromTask() {
+        this.goal_row = task.row;   // Maybe not task.row, but plotLocation.row?
+        this.goal_col = task.col;
     }
 
     setTask(task) {
@@ -327,6 +375,98 @@ class Farmzoid {
             dailyTaskCount++;
             this.hasTask = false;
             console.log(this.task.taskName + " completed");
+        }
+    }
+
+    // TODO: Choosing random move / neighbors, maybe move based on goal (tasks, plant locations)?????
+    bestFS() {
+        let row, col;
+        let top, topLeft, topRight, right, bottomRight, bottom, bottomLeft, left;
+        let validHerusitics = [];
+        let neighbors = []
+
+        // Get row and col numbers
+        row = this.x;
+        col = this.y;
+
+        // Index the grid and find the cell position
+        topLeft     = grid[index(row-1, col-1)];    
+        top         = grid[index(row-1, col)];     
+        topRight    = grid[index(row-1, col+1)];    
+        right       = grid[index(row, col+1)];     
+        bottomRight = grid[index(row+1, col+1)];    
+        bottom      = grid[index(row+1, col)];     
+        bottomLeft  = grid[index(row+1, col-1)];    
+        left        = grid[index(row, col-1)];     
+
+        // If the cell is undefined and not an obstacle
+        // Top left
+        if(topLeft && topLeft.isObstacle === false) {
+            topLeft.heur_val = heur_val(row-1, col-1, this.goal_row, this.goal_col);      // Generate h(n)
+            validHerusitics.push(topLeft.heur_val);                                        // Add to valid heuristic values
+            neighbors.push(topLeft);
+            console.log("top left");
+        }
+        // Top
+        if(top && top.isObstacle === false) {
+            top.heur_val = heur_val(row-1, col, this.goal_row, this.goal_col);          // Generate h(n)
+            validHerusitics.push(top.heur_val);                                          // Add to valid heuristic values
+            neighbors.push(top);
+            console.log("top");
+        }
+        // Top right
+        if(topRight && topRight.isObstacle === false) {
+            topRight.heur_val = heur_val(row-1, col+1, this.goal_row, this.goal_col);      // Generate h(n)
+            validHerusitics.push(topRight.heur_val);                                           // Add to valid heuristic values
+            neighbors.push(topRight);
+            console.log("top right");
+        }
+        // Right
+        if(right && right.isObstacle === false) {
+            right.heur_val = heur_val(row, col+1, this.goal_row, this.goal_col);        // Generate h(n)
+            validHerusitics.push(right.heur_val);                                              // Add to valid heuristic values
+            neighbors.push(right);
+            console.log("right");
+        }
+        // Bottom right
+        if(bottomRight && bottomRight.isObstacle === false) {
+            bottomRight.heur_val = heur_val(row+1, col+1, this.goal_row, this.goal_col);      // Generate h(n)
+            validHerusitics.push(bottomRight.heur_val);                                           // Add to valid heuristic values
+            neighbors.push(bottomRight);
+            console.log("bottom right");
+        }
+        // Bottom
+        if(bottom && bottom.isObstacle === false) {
+            bottom.heur_val = heur_val(row+1, col, this.goal_row, this.goal_col);      // Generate h(n)
+            validHerusitics.push(bottom.heur_val);                                         // Add to valid heuristic values
+            neighbors.push(bottom);
+            console.log("bottom");
+        }
+        // Bottom left
+        if(bottomLeft && bottomLeft.isObstacle === false) {
+            bottomLeft.heur_val = heur_val(row+1, col-1, this.goal_row, this.goal_col);      // Generate h(n)
+            validHerusitics.push(bottomLeft.heur_val);                                            // Add to valid heuristic values
+            neighbors.push(bottomLeft);
+            console.log("bottom left");
+        }
+        // Left
+        if(left && left.isObstacle === false) {
+            left.heur_val = heur_val(row, col-1, this.goal_row, this.goal_col);      // Generate h(n)
+            validHerusitics.push(left.heur_val);                                          // Add to valid heuristic values
+            neighbors.push(left);
+            console.log("left");
+        }
+
+        // Pushes the cell with the lowest Heuristic value into neighbors list
+        if(neighbors.length > 0) {
+            //console.log("neighbors are: " + JSON.stringify(neighbors));
+            let min = Math.min.apply(Math, neighbors.map(function(o) { return o.heur_val; }))
+            //console.log(min);
+            let index = neighbors.map(function(e) { return e.heur_val; }).indexOf(min);
+            //console.log(index);
+            return neighbors[index];
+        } else {
+            return null;
         }
     }
 }
@@ -456,10 +596,10 @@ farmzoid        : List of 4 bots
 class WorkingMem{
     constructor(nature, fms, validPlots) {
         this.validPlots = validPlots; 
-        console.log(validPlots);
         this.nature = nature;
         this.fms = fms;
-        this.farmzoids = [new Farmzoid(21, 19, "green"), new Farmzoid(17, 19, "blue"), new Farmzoid(19, 21, "pink"), new Farmzoid(19, 17, "yellow")];
+        this.farmzoids = [new Farmzoid(21, 19, "green"), new Farmzoid(17, 19, "blue"), 
+                          new Farmzoid(19, 21, "pink"), new Farmzoid(19, 17, "yellow")];
     }
 
     generateTasks() {
@@ -489,6 +629,9 @@ class WorkingMem{
                 }
             }   
         }
+        for(let i = 0; i < fms.taskList.length; ++i) {
+
+        }
     }
 
     // Randomly check for neighbors in all 8 directions?
@@ -499,74 +642,40 @@ class WorkingMem{
         let col;
         let top, topLeft, topRight, right, bottomRight, bottom, bottomLeft, left;
 
-        // TODO: Choosing random move / neighbors, maybe move based on goal (tasks, plant locations)?????
+        // Check and calc best neighbors for all farmZoIDs
         for(let i = 0; i < this.farmzoids.length; ++i) {
-            randomNum = Math.floor((Math.random() * 8) + 1);  // 1 - 8
-            row = this.farmzoids[i].x;
-            col = this.farmzoids[i].y;
+            let next = this.farmzoids[i].bestFS();  // Check all 8 adjacent cells
 
-            topLeft     = grid[index(row-1, col-1)];    // 1
-            top         = grid[index(row-1, col)];      // 2
-            topRight    = grid[index(row-1, col+1)];    // 3
-            right       = grid[index(row, col+1)];      // 4
-            bottomRight = grid[index(row+1, col+1)];    // 5
-            bottom      = grid[index(row+1, col)];      // 6
-            bottomLeft  = grid[index(row+1, col-1)];    // 7
-            left        = grid[index(row, col-1)];      // 8
+            // If valid cell
+            if(next) {
+                // Reset the current cell where bot is
+                //grid[index(this.farmzoids[i].x, this.farmzoids[i].y)].reset_farmzoidCell();    
+                
+                // Update new position to move from heuristic 
+                this.farmzoids[i].x = next.row; 
+                this.farmzoids[i].y = next.col;
+                console.log("current: " + this.farmzoids[i].x + " " + this.farmzoids[i].y);
+                console.log("next: " + next.row + " " + next.col);
 
-            // Check for move location, valid cell, and if it's not an obstacle
-            if(randomNum === 1 && topLeft && topLeft != "obstacle") // top left
-            {
-                // console.log("Farmzoid # " + i + " moving top left");
-                // console.log("before : " + this.farmzoids[i].x + ", " + this.farmzoids[i].y);
-                this.farmzoids[i].x = row-1;   // Change farmzoids X, Y position
-                this.farmzoids[i].y = col-1;
-                //console.log("after : " + this.farmzoids[i].x + ", " + this.farmzoids[i].y);
+                // Redraw bot
+                grid[index(this.farmzoids[i].x, this.farmzoids[i].y)].show_farmzoid(this.farmzoids[i].color);
             }
-            else if(randomNum <= 2 && top && top != "obstacle")     // top
-            {
-                this.farmzoids[i].x = row-1;
-                console.log("Farmzoid # " + i + " moving top");
-            }
-            else if(randomNum <= 3 && topRight && topRight != "obstacle") // top right
-            {
-                this.farmzoids[i].x = row-1;
-                this.farmzoids[i].y = col+1;
-                console.log("Farmzoid # " + i + " moving top right");
-            }
-            else if(randomNum <= 4 && right && right != "obstacle") // right
-            {
-                this.farmzoids[i].x = col+1;
-                console.log("Farmzoid # " + i + " moving right");
-            }
-            else if(randomNum <= 5 && bottomRight && bottomRight != "obstacle") // bottom right
-            {
-                this.farmzoids[i].x = row+1;
-                this.farmzoids[i].y = col+1;
-                console.log("Farmzoid # " + i + " moving bottom right");
-            }
-            else if(randomNum <= 6 && bottom && bottom != "obstacle") // bottom 
-            {
-                this.farmzoids[i].x = row+1;
-                console.log("Farmzoid # " + i + " moving bottom left");
-            }
-            else if(randomNum <= 7 && bottomLeft && bottomLeft != "obstacle") //bottom left
-            {
-                this.farmzoids[i].x = row+1;
-                this.farmzoids[i].y = col-1;
-                console.log("Farmzoid # " + i + " moving bottom left");
-            }
-            else if(randomNum <= 8 && left && left != "obstacle") // left
-            {
-                this.farmzoids[i].y = col-1;
-                console.log("Farmzoid # " + i + " moving left");
-            }
-            else {
-                console.log("Farmzoid # " + i + " tried to move to invalid cell");
-                i--;    // Redo for that bot
-            }
+        } // End for loop
+        
+    }
+
+    // Color farmzoids
+    drawFarmZoids() {
+        for(let i = 0; i < workingmem.farmzoids.length; ++i) {
+            let x = workingmem.farmzoids[i].x;
+            let y = workingmem.farmzoids[i].y;
+            let color = workingmem.farmzoids[i].color;
+            console.log("Farmzoid # " + i + " at " + x + ", " + y);
+            grid[index(x, y)].show_farmzoid(color);
         }
     }
+
+    // Color dirt, plots, river, cave
 
     drawGrid() {
         // Color the dirt
@@ -582,11 +691,26 @@ class WorkingMem{
         }
 
         // Color river
-        grid[0].show_river();
+        for(let i = 0; i < riverLocations.length; i++) {
+            let x = riverLocations[i][0];
+            let y = riverLocations[i][1];
+            grid[index(x, y)].show_river();
+        }
+        // let iy = 25
+        // let sz = g_canvas.cell_size;
+        // for(let ix = 1; ix <= 15; ix++)
+        // {
+        //     if(ix < 16 && iy < 39)
+        //     {
+        //         grid[index(ix, iy)].show_river();
+        //         grid[index(ix+1, iy)].show_river();
+        //         iy++;
+        //     }
+        // }
 
         // Color cave
-        for(let x = 14; x < 19; x++) {
-            for(let y = 26; y < 30; y++) {
+        for(let x = 26; x < 30; x++) {
+            for(let y = 14; y < 19; y++) {
                 grid[index(x, y)].show_cave();
             }
         }
@@ -594,6 +718,11 @@ class WorkingMem{
         // Color barn
         grid[index(barnLocation.x, barnLocation.y)].show_barn();
 
+        // Color bridge
+        grid[index(30, 6)].show_bridge();
+        grid[index(30, 7)].show_bridge();
+        grid[index(35, 11)].show_bridge();
+        grid[index(35, 12)].show_bridge();
     }
     
 }
@@ -681,6 +810,15 @@ function setup() // P5 Setup Fcn
         }
     }
 
+    // TESTING goals... Delete later!!!!!!
+    workingmem.farmzoids[0].setGoal(0, 0);
+    workingmem.farmzoids[1].setGoal(39, 39);
+    workingmem.farmzoids[2].setGoal(39, 0);
+    workingmem.farmzoids[3].setGoal(0, 39);
+
+    workingmem.drawGrid();
+    workingmem.drawFarmZoids();
+
     // Change framerate speed
     frameRate(1)
     //do_btn( ); 
@@ -694,6 +832,7 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
     frameCounter++;
 
     workingmem.drawGrid();
+    workingmem.checkNeighbors();    // Draw farmzoids
 
     // Color farmzoids
     for(let i = 0; i < workingmem.farmzoids.length; ++i) {
@@ -712,11 +851,19 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
     }
     workingmem.generateTasks();
     
+    let dayCount = 1;
+    console.log("current day:" + dayCount);
+    if(dayCount > workingmem.fms.dayCounter){
+        console.log("it's a new day")
+        workingmem.natureEffects();
+        workingmem.setupTasks();
+        workingmem.fms.checkNewDay();
+        dayCount = workingmem.fms.dayCounter;
+        console.log("new day is: " + dayCount)
+    }
     // Update daily nature changes
-
     // workingmem.fms.checkNewDay();
 
-    workingmem.checkNeighbors();
 }
 
 /*******************************************************************************************************************
