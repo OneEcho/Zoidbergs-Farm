@@ -59,19 +59,21 @@ class Cell {
 
     // Color river cells
     show_river() {
-        let sz = g_canvas.cell_size;
-        let x = this.col * g_canvas.cell_size;
-        let y = this.row * g_canvas.cell_size;
+        let y = this.col * g_canvas.cell_size;
+        let x = this.row * g_canvas.cell_size;
         fill('blue');
         rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
         this.color = "river";
         this.isObstacle = true;
+    }
 
-        fill('grey')
-        rect(6*sz, 30*sz, sz, sz)
-        rect(7*sz, 30*sz, sz, sz)
-        rect(11*sz, 35*sz, sz, sz)
-        rect(12*sz, 35*sz, sz, sz)
+    show_bridge() {
+        let y = this.col * g_canvas.cell_size;
+        let x = this.row * g_canvas.cell_size;
+        fill('grey');
+        rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
+        this.color = "bridge";
+        this.isObstacle = false;
     }
 
     // Color a farmzoid
@@ -81,7 +83,7 @@ class Cell {
         stroke(255);
         fill(color);
         rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
-        this.isObstacle = false;
+        this.isObstacle = true;
     }
 
     // Reset the current cell position of the bot, so other bots can consider moving to this

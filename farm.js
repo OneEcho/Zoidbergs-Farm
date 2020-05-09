@@ -24,6 +24,23 @@ const plotLocations = [
     [32, 19]    // plot 20
 ];
 
+const riverLocations = [
+    [25, 1], [25, 2],
+    [26, 2], [26, 3],
+    [27, 3], [27, 4],
+    [28, 4], [28, 5],
+    [29, 5], [29, 6],
+    [30, 6], [30, 7],
+    [31, 7], [31, 8],
+    [32, 8], [32, 9],
+    [33, 9], [33, 10],
+    [34, 10], [34, 11],
+    [35, 11], [35, 12],
+    [36, 12], [36, 13],
+    [37, 13], [37, 14],
+    [38, 14], [38, 15],
+];
+
 const barnLocation = {x: 19, y: 19};
 
 const plantStageColors = {
@@ -661,17 +678,22 @@ class WorkingMem{
         }
 
         // Color river
-        let iy = 25
-        let sz = g_canvas.cell_size;
-        for(let ix = 1; ix <= 15; ix++)
-        {
-            if(ix < 16 && iy < 39)
-            {
-                grid[index(ix, iy)].show_river();
-                grid[index(ix+1, iy)].show_river();
-                iy++;
-            }
+        for(let i = 0; i < riverLocations.length; i++) {
+            let x = riverLocations[i][0];
+            let y = riverLocations[i][1];
+            grid[index(x, y)].show_river();
         }
+        // let iy = 25
+        // let sz = g_canvas.cell_size;
+        // for(let ix = 1; ix <= 15; ix++)
+        // {
+        //     if(ix < 16 && iy < 39)
+        //     {
+        //         grid[index(ix, iy)].show_river();
+        //         grid[index(ix+1, iy)].show_river();
+        //         iy++;
+        //     }
+        // }
 
         // Color cave
         for(let x = 26; x < 30; x++) {
@@ -683,6 +705,11 @@ class WorkingMem{
         // Color barn
         grid[index(barnLocation.x, barnLocation.y)].show_barn();
 
+        // Color bridge
+        grid[index(30, 6)].show_bridge();
+        grid[index(30, 7)].show_bridge();
+        grid[index(35, 11)].show_bridge();
+        grid[index(35, 12)].show_bridge();
     }
     
 }
@@ -777,7 +804,7 @@ function setup() // P5 Setup Fcn
     workingmem.drawFarmZoids();
 
     // Change framerate speed
-    frameRate(0.5)
+    frameRate(1)
     //do_btn( ); 
 }
 
