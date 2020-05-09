@@ -2,26 +2,26 @@
 // Farm objects
 
 const plotLocations = [
-    [8, 13],    // plot 1
-    [8, 10],    // plot 2
-    [11, 13],   // plot 3
-    [11, 10],   // plot 4
-    [15, 10],   // plot 5
-    [15, 13],   // plot 6
-    [18, 13],   // plot 7
-    [18, 10],   // plot 8
-    [22, 10],   // plot 9
-    [25, 10],   // plot 10
-    [22, 13],   // plot 11
-    [25, 13],   // plot 12
-    [29, 10],   // plot 13
-    [32, 10],   // plot 14
-    [29, 13],   // plot 15
-    [32, 13],   // plot 16
-    [29, 16],   // plot 17
-    [32, 16],   // plot 18
-    [29, 19],   // plot 19
-    [32, 19]    // plot 20
+    [13, 8],    // plot 1
+    [10, 8],    // plot 2
+    [13, 11],   // plot 3
+    [10, 11],   // plot 4
+    [10, 15],   // plot 5
+    [13, 15],   // plot 6
+    [13, 18],   // plot 7
+    [10, 18],   // plot 8
+    [10, 22],   // plot 9
+    [10, 25],   // plot 10
+    [13, 22],   // plot 11
+    [13, 25],   // plot 12
+    [10, 29],   // plot 13
+    [10, 32],   // plot 14
+    [13, 29],   // plot 15
+    [13, 32],   // plot 16
+    [16, 29],   // plot 17
+    [16, 32],   // plot 18
+    [19, 29],   // plot 19
+    [19, 32]    // plot 20
 ];
 
 const riverLocations = [
@@ -113,7 +113,7 @@ class Nature {
 
     randBlight() {
         console.log("randBlight()");
-        let rng = Math.floor((Math.random() * 10) + 1);  // 1 - 10, 2% chance of having blight and stalling growth
+        let rng = Math.floor((Math.random() * 100) + 1);  // 1 - 10, 2% chance of having blight and stalling growth
         var blightType = ["corn", "berry", "apple"];
 
         if (rng <= 2) {
@@ -169,14 +169,19 @@ class Plant {
     }
 
     doPlantTask(currTask) {
+        // Task water plant
         if (currTask.taskName === "water") {
-            waterReserve++;
-            console.log("plant watered")
+            this.waterReserve++
+            console.log("plant watered, waterReseve: " + this.waterReserve);
         }
+
+        // Task soap to remove blight
         if (currTask.taskName === "soap") {
             this.plantBlight = null;
             console.log("blight fixed")
         }
+
+        // Task fertilize
         if (currTask.taskName === "fertilize") {
             this.fertilized = true;
             console.log("plant fertilized")
@@ -380,8 +385,8 @@ class Farmzoid {
     }
 
     doTask() {
-        if (this.task.plotLocation.y === this.x && this.task.plotLocation.x === this.y) {
-            console.log("doPlotTask()");
+        if(this.task.plotLocation.x === this.x && this.task.plotLocation.y === this.y) {
+            console.log("doPlotTask() 1");
             this.task.plotLocation.doPlotTask(this.task);
             this.task.taskCompleted = true;
             this.task.taskAssigned = false;
@@ -389,8 +394,9 @@ class Farmzoid {
             this.hasTask = false;
             console.log(this.task.taskName + " completed");
         }
-        if (this.task.plotLocation.y === this.x && this.task.plotLocation.x === this.y && this.task.plotLocation.plant != null) {
-            console.log("doPlantTask()");
+
+        if(this.task.plotLocation.x === this.x && this.task.plotLocation.y === this.y && this.task.plotLocation.plant != null) {
+            console.log("doPlantTask() 2");
             this.task.plotLocation.plant.doPlantTask(this.task);
             this.task.taskCompleted = true;
             this.task.taskAssigned = false;
@@ -548,48 +554,48 @@ class FMS {
         nature.updateWeather(); // Update the weather
 
         // Check all plots
-        for(let i = 0; i < validPlots.length; i++) {
+        for(let i = 0; i < this.validPlots.length; i++) {
             
             // If there is a plant in the plot
-            if(validPlots[i].plant != null) {
-                validPlots[i].plant.incrementAge();
-                validPlots[i].plant.updateGrowthCycle();
-                validPlots[i].plant.updateFruitingState();
+            if(this.validPlots[i].plant != null) {
+                this.validPlots[i].plant.incrementAge();
+                this.validPlots[i].plant.updateGrowthCycle();
+                this.validPlots[i].plant.updateFruitingState();
 
                 // Decrement water if clear
-                if(nature.sky === "clear" && validPlots[i].plant.waterReserve > 0) {
-                    validPlots[i].plant.waterReserve--;
+                if(nature.sky === "clear" && this.validPlots[i].plant.waterReserve > 0) {
+                    this.validPlots[i].plant.waterReserve--;
                     console.log("\tday was clear, dec water");
                 }
 
                 // Increment water if raining
                 if(nature.sky === "rainy") {
-                    validPlots[i].plant.waterReserve++;
+                    this.validPlots[i].plant.waterReserve++;
                     console.log("\tday was rainy, inc water");
                 }
 
                 // Stall growth if cloudy
                 if(nature.sky === "cloudy") {
-                    validPlots[i].plant.decrementAge();
+                    this.validPlots[i].plant.decrementAge();
                     console.log("\tday was cloudy, stall ageing")
                 }
 
                 // Decrement color if water reserve is 0
-                if(validPlots[i].plant.waterReserve === 0 && validPlots[i].plant.plantColor != null) {
+                if(this.validPlots[i].plant.waterReserve === 0 && this.validPlots[i].plant.plantColor != null) {
                     let color = validPlots[i].plant.getPlantColor();                       // Get plant color
                     grid[index(validPlots[i].y, validPlots[i].x)].show_plantColor(color);  // Draw plant color
                 }
 
                 // Dead
-                if(validPlots[i].plant.fruitingState === "black" && validPlots[i].plant.age == validPlots[i].plant.age + 2) {
-                    validPlots[i].plant.plantType = null;  // change back to empty plot
-                    grid[index(validPlots[i].y, validPlots[i].x)].show_plantColor(fruitStageColors.deadPlant);
+                if(this.validPlots[i].plant.fruitingState === "black" && this.validPlots[i].plant.age === this.validPlots[i].plant.age + 2) {
+                    this.validPlots[i].plant.plantType = null;  // change back to empty plot
+                    grid[index(this.validPlots[i].y, this.validPlots[i].x)].show_plantColor(fruitStageColors.deadPlant);
                     console.log("\tplant is now dead after 2 days of fruit being black")
                 }
 
                 // Blight
-                if(validPlots[i].plant.blight != null) {
-                    validPlots[i].plant.blightEffects(nature.blight);
+                if(this.validPlots[i].plant.blight != null) {
+                    this.validPlots[i].plant.blightEffects(nature.blight);
                 }
             }
         }
@@ -633,45 +639,42 @@ class WorkingMem {
 
     generateTasks() {
         for (let i = 0; i < 20; i++) {
-            if (validPlots[i].hasPlot === false) {
+
+            if (this.validPlots[i].hasPlot === false) {
                 // fms.addTasks(new Task("place plot", validPlots[i], "plot equipment"));
-                this.taskList.push(new Task("place plot", validPlots[i], "plot equipment"));
-            } else if (validPlots[i].plant != null) {
-                if (validPlots[i].plant.fertilized === false) {
-                    this.taskList.push(new Task("fertilize", validPlots[i], "fertilizer"));
+                this.taskList.push(new Task("place plot", this.validPlots[i], "plot equipment"));
+            } else if (this.validPlots[i].plant != null) {
+                if (this.validPlots[i].plant.fertilized === false) {
+                    this.taskList.push(new Task("fertilize", this.validPlots[i], "fertilizer"));
                 }
-                else if (validPlots[i].plant.fertilized === true && validPlots[i].plant.waterReserve <= 3) {
-                    this.taskList.push(new Task("watering", validPlots[i], "water"));
+                else if (this.validPlots[i].plant.fertilized === true && this.validPlots[i].plant.waterReserve < 3) {
+                    this.taskList.push(new Task("water", this.validPlots[i], "water"));
                 }
-                else if (validPlots[i].plant.blight != null) {
-                    this.taskList.push(new Task("soaping", validPLots[i], "soap"));
+                else if (this.validPlots[i].plant.blight != null) {
+                    this.taskList.push(new Task("soap", this.validPLots[i], "soap"));
                 }
-                else if (validPlots[i].plant.fruitingState === "red" && validPlots[i].plant.waterReserve > 0 && validPlots[i].plant.waterReserve <= 3) {
-                    this.taskList.push(new Task("harvest", validPlots[i], "barrel"));
+                else if (this.validPlots[i].plant.fruitingState === "red" && this.validPlots[i].plant.waterReserve > 0 && this.validPlots[i].plant.waterReserve <= 3) {
+                    this.taskList.push(new Task("harvest", this.validPlots[i], "barrel"));
                 }
             } else {
                 console.log("\tadding task to plant seed");
-                this.taskList.push(new Task("plant seed", validPlots[i], "apple"));
+                this.taskList.push(new Task("plant seed", this.validPlots[i], "apple"));
             }
         }
-
-        console.log("\ttask list: " + this.taskList);
     }
 
     assignTasks() {
         for (let i = 0; i < 4; i++) {
             if (this.farmzoids[i].hasTask === false) {
                 this.farmzoids[i].setTask(this.taskList.pop());
-                console.log("coords:" + this.farmzoids[i].task.plotLocation.x + ", " + this.farmzoids[i].task.plotLocation.y);
-                console.log("task " + this.farmzoids[i].task.taskName + " assigned to bot " + i);
-                this.farmzoids[i].setGoal(this.farmzoids[i].task.plotLocation.y, this.farmzoids[i].task.plotLocation.x);
+                console.log("task: " + this.farmzoids[i].task.taskName + " at: " + this.farmzoids[i].task.plotLocation.x + " " + this.farmzoids[i].task.plotLocation.y + " assigned to bot " + i);
+                this.farmzoids[i].setGoal(this.farmzoids[i].task.plotLocation.x, this.farmzoids[i].task.plotLocation.y);
             }
         }
     }
 
     // Randomly check for neighbors in all 8 directions?
     checkNeighbors() {
-        console.log("checkNeighbors()");
         let randomNum;
         let row;
         let col;
@@ -718,8 +721,8 @@ class WorkingMem {
 
         // Color the plots
         for (let i = 0; i < plotLocations.length; i++) {
-            let x = plotLocations[i][1];
-            let y = plotLocations[i][0];
+            let x = plotLocations[i][0];
+            let y = plotLocations[i][1];
             grid[index(x, y)].show_plots();
         }
 
@@ -759,25 +762,25 @@ class WorkingMem {
 
 // set validPlots
 let validPlots = [new Plot(plotLocations[0][0], plotLocations[0][1]),
-new Plot(plotLocations[1][0], plotLocations[1][1]),
-new Plot(plotLocations[2][0], plotLocations[2][1]),
-new Plot(plotLocations[3][0], plotLocations[3][1]),
-new Plot(plotLocations[4][0], plotLocations[4][1]),
-new Plot(plotLocations[5][0], plotLocations[5][1]),
-new Plot(plotLocations[6][0], plotLocations[6][1]),
-new Plot(plotLocations[7][0], plotLocations[7][1]),
-new Plot(plotLocations[8][0], plotLocations[8][1]),
-new Plot(plotLocations[9][0], plotLocations[9][1]),
-new Plot(plotLocations[10][0], plotLocations[10][1]),
-new Plot(plotLocations[11][0], plotLocations[11][1]),
-new Plot(plotLocations[12][0], plotLocations[12][1]),
-new Plot(plotLocations[13][0], plotLocations[13][1]),
-new Plot(plotLocations[14][0], plotLocations[14][1]),
-new Plot(plotLocations[15][0], plotLocations[15][1]),
-new Plot(plotLocations[16][0], plotLocations[16][1]),
-new Plot(plotLocations[17][0], plotLocations[17][1]),
-new Plot(plotLocations[18][0], plotLocations[18][1]),
-new Plot(plotLocations[19][0], plotLocations[19][1])];
+                    new Plot(plotLocations[1][0], plotLocations[1][1]),
+                    new Plot(plotLocations[2][0], plotLocations[2][1]),
+                    new Plot(plotLocations[3][0], plotLocations[3][1]),
+                    new Plot(plotLocations[4][0], plotLocations[4][1]),
+                    new Plot(plotLocations[5][0], plotLocations[5][1]),
+                    new Plot(plotLocations[6][0], plotLocations[6][1]),
+                    new Plot(plotLocations[7][0], plotLocations[7][1]),
+                    new Plot(plotLocations[8][0], plotLocations[8][1]),
+                    new Plot(plotLocations[9][0], plotLocations[9][1]),
+                    new Plot(plotLocations[10][0], plotLocations[10][1]),
+                    new Plot(plotLocations[11][0], plotLocations[11][1]),
+                    new Plot(plotLocations[12][0], plotLocations[12][1]),
+                    new Plot(plotLocations[13][0], plotLocations[13][1]),
+                    new Plot(plotLocations[14][0], plotLocations[14][1]),
+                    new Plot(plotLocations[15][0], plotLocations[15][1]),
+                    new Plot(plotLocations[16][0], plotLocations[16][1]),
+                    new Plot(plotLocations[17][0], plotLocations[17][1]),
+                    new Plot(plotLocations[18][0], plotLocations[18][1]),
+                    new Plot(plotLocations[19][0], plotLocations[19][1])];
 
 var nature = new Nature();
 var fms = new FMS(1, validPlots);
@@ -842,14 +845,13 @@ function setup() // P5 Setup Fcn
     workingmem.drawFarmZoids();
 
     // Change framerate speed
-    frameRate(10);
+    frameRate(2);
     //do_btn( ); 
 }
 
 // Main farm loop?
 function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
 {
-    console.log("draw()");
     console.log("frame = " + frameCounter);
     frameCounter++;
 
