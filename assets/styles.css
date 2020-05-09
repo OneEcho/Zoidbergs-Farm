@@ -5,3 +5,8 @@ body {
 canvas {
   background-color: black;
 }
+
+#defaultCanvas0 {
+  float: left;
+  margin-left: 200px;
+}

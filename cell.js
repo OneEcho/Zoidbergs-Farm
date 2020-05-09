@@ -14,6 +14,8 @@ class Cell {
         this.color = "";            // Dirt, plot, barn, river, cave, farmzoid
         this.isObstacle = false;    // Is it passasble terrain?
         this.heur_val = 0;          // Heuristic value forr BFS
+
+        this.plantColor;
     }
 
     // Fill background with dirt dells
@@ -35,6 +37,16 @@ class Cell {
         fill('peru');
         rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
         this.color = "plot";
+    }
+
+    show_plantColor(color) {
+        let y = this.col * g_canvas.cell_size;
+        let x = this.row * g_canvas.cell_size;
+        stroke(255);
+        fill(color);
+        rect(y, x, g_canvas.cell_size, g_canvas.cell_size);
+        this.color = "plant";
+        this.plantColor = color;
     }
 
     // Color cave cell

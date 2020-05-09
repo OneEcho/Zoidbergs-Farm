@@ -41,15 +41,23 @@ const riverLocations = [
     [38, 14], [38, 15],
 ];
 
-
 const barnLocation = {x: 19, y: 19};
 
 const plantStageColors = {
+    greenPlantColor: "#7da832",
     yellowPlantColor: "#d9cf14",
     brownPlantColor: "#61390f",
     deadPlantColor: "#0a0602"
 };
 
+const fruitStageColors = {
+    greenfruit: "#9ced2b",
+    redfruit: "#ed4321",
+    blossom: "#a41fbf",
+    deadPlant: "#0a0602"
+}
+
+// Manhattan Distance
 function heur_val(row, col, goal_row, goal_col){
     return Math.abs(row - goal_row) + Math.abs(col - goal_col)
 }
@@ -136,7 +144,6 @@ y               : y-coord
 *******************************************************************************************************************/
 class Plant {
     constructor() {
-
         this.plantType = null; 
         this.growthCycle = "seed";
         this.waterReserve = 0;
@@ -146,6 +153,9 @@ class Plant {
         this.taskDone = null;
         this.age = 0;
         this.plantColor = null  // RGB color value
+        
+        this.x;
+        this.y;
     }
 
     incrementAge() {
@@ -261,17 +271,44 @@ class Plant {
         }
     }
 
-    // do change color of cell here
-    decrementFruitColor() {
-        if(this.fruitingState === "red") {
-            this.fruitingState = "green"
+    // do change color of plant cell here :) :)
+    getPlantColor() { 
+
+        // Green
+        if(this.plantColor === plantStageColors.greenPlantColor) {
+            this.plantColor = plantStageColors.yellowPlantColor;
+            return this.plantColor;
         }
-        if(this.fruitingState === "green") {
-            this.fruitingState = "yellow";
+        // Yellow
+        else if(this.plantColor === plantStageColors.yellowPlantColor) {
+            this.plantColor = plantStageColors.brownPlantColor;
+            return this.plantColor;
         }
-        if(this.fruitingState === "yellow") {
-            this.fruitingState = "black";
+        // Brown
+        else if(this.plantColor ===  plantStageColors.brownPlantColor) {
+            this.plantColor =  plantStageColors.deadPlantColor;
+            return this.plantColor;
         }
+        // black and drop fruit somewehre
+        else if(this.plantColor === plantStageColors.deadPlantColor)
+        {
+            this.fruitStageColors = fruitStageColors.deadPlant;
+            return this.fruitStageColors
+        }
+
+        // red fruiting
+        if(this.fruitingState === "red" && this.growthCycle === 'fruiting')
+        {
+            this.fruitStageColors = fruitStageColors.redfruit;
+            return this.fruitStageColors
+        }
+
+         return"red";
+    }
+
+    setPlantCoords(x, y) {
+        this.x = x;
+        this.y = y;
     }
 
 }
@@ -407,65 +444,54 @@ class Farmzoid {
             topLeft.heur_val = heur_val(row-1, col-1, this.goal_row, this.goal_col);      // Generate h(n)
             validHerusitics.push(topLeft.heur_val);                                        // Add to valid heuristic values
             neighbors.push(topLeft);
-//            console.log("top left");
         }
         // Top
         if(top && top.isObstacle === false) {
             top.heur_val = heur_val(row-1, col, this.goal_row, this.goal_col);          // Generate h(n)
             validHerusitics.push(top.heur_val);                                          // Add to valid heuristic values
             neighbors.push(top);
-//            console.log("top");
         }
         // Top right
         if(topRight && topRight.isObstacle === false) {
             topRight.heur_val = heur_val(row-1, col+1, this.goal_row, this.goal_col);      // Generate h(n)
             validHerusitics.push(topRight.heur_val);                                           // Add to valid heuristic values
             neighbors.push(topRight);
-//            console.log("top right");
         }
         // Right
         if(right && right.isObstacle === false) {
             right.heur_val = heur_val(row, col+1, this.goal_row, this.goal_col);        // Generate h(n)
             validHerusitics.push(right.heur_val);                                              // Add to valid heuristic values
             neighbors.push(right);
-//            console.log("right");
         }
         // Bottom right
         if(bottomRight && bottomRight.isObstacle === false) {
             bottomRight.heur_val = heur_val(row+1, col+1, this.goal_row, this.goal_col);      // Generate h(n)
             validHerusitics.push(bottomRight.heur_val);                                           // Add to valid heuristic values
             neighbors.push(bottomRight);
-//            console.log("bottom right");
         }
         // Bottom
         if(bottom && bottom.isObstacle === false) {
             bottom.heur_val = heur_val(row+1, col, this.goal_row, this.goal_col);      // Generate h(n)
             validHerusitics.push(bottom.heur_val);                                         // Add to valid heuristic values
             neighbors.push(bottom);
-//            console.log("bottom");
         }
         // Bottom left
         if(bottomLeft && bottomLeft.isObstacle === false) {
             bottomLeft.heur_val = heur_val(row+1, col-1, this.goal_row, this.goal_col);      // Generate h(n)
             validHerusitics.push(bottomLeft.heur_val);                                            // Add to valid heuristic values
             neighbors.push(bottomLeft);
-//            console.log("bottom left");
         }
         // Left
         if(left && left.isObstacle === false) {
             left.heur_val = heur_val(row, col-1, this.goal_row, this.goal_col);      // Generate h(n)
             validHerusitics.push(left.heur_val);                                          // Add to valid heuristic values
             neighbors.push(left);
-//            console.log("left");
         }
 
         // Pushes the cell with the lowest Heuristic value into neighbors list
         if(neighbors.length > 0) {
-            //console.log("neighbors are: " + JSON.stringify(neighbors));
             let min = Math.min.apply(Math, neighbors.map(function(o) { return o.heur_val; }))
-            //console.log(min);
             let index = neighbors.map(function(e) { return e.heur_val; }).indexOf(min);
-            //console.log(index);
             return neighbors[index];
         } else {
             return null;
@@ -533,35 +559,52 @@ class FMS {
         this.validPlots = validPlots;
     }
 
+    // Do daily nature effects
     natureEffects() {
         console.log("natureEffects()");
-        nature.updateWeather();
+        nature.updateWeather(); // Update the weather
 
-        for(let i = 0; i < 20; i++) {
+        // Check all plots
+        for(let i = 0; i < validPlots.length; i++) {
+            
+            // If there is a plant in the plot
             if(validPlots[i].plant != null) {
                 validPlots[i].plant.incrementAge();
                 validPlots[i].plant.updateGrowthCycle();
                 validPlots[i].plant.updateFruitingState();
+
+                // Decrement water if clear
                 if(nature.sky === "clear" && validPlots[i].plant.waterReserve > 0) {
                     validPlots[i].plant.waterReserve--;
                     console.log("\tday was clear, dec water");
                 }
+
+                // Increment water if raining
                 if(nature.sky === "rainy") {
                     validPlots[i].plant.waterReserve++;
                     console.log("\tday was rainy, inc water");
                 }
+
+                // Stall growth if cloudy
                 if(nature.sky === "cloudy") {
                     validPlots[i].plant.decrementAge();
                     console.log("\tday was cloudy, stall ageing")
                 }
-                if(validPlots[i].plant.waterReserve === 0) {
-                    validPlots[i].plant.decrementFruitColor();
+
+                // Decrement color if water reserve is 0
+                if(validPlots[i].plant.waterReserve === 0 && validPlots[i].plant.plantColor != null) {
+                    let color = validPlots[i].plant.getPlantColor();                       // Get plant color
+                    grid[index(validPlots[i].y, validPlots[i].x)].show_plantColor(color);  // Draw plant color
                 }
+
+                // Dead
                 if(validPlots[i].plant.fruitingState === "black" && validPlots[i].plant.age == validPlots[i].plant.age + 2) {
-                    validPlots[i].plant.plantType = null;
-                    // change back to empty plot
+                    validPlots[i].plant.plantType = null;  // change back to empty plot
+                    grid[index(validPlots[i].y, validPlots[i].x)].show_plantColor(fruitStageColors.deadPlant);
                     console.log("\tplant is now dead after 2 days of fruit being black")
                 }
+
+                // Blight
                 if(validPlots[i].plant.blight != null) {
                     validPlots[i].plant.blightEffects(nature.blight);
                 }
@@ -663,8 +706,6 @@ class WorkingMem{
                 // Update new position to move from heuristic 
                 this.farmzoids[i].x = next.row; 
                 this.farmzoids[i].y = next.col;
-//                console.log("current: " + this.farmzoids[i].x + " " + this.farmzoids[i].y);
-//                console.log("next: " + next.row + " " + next.col);
 
                 // Redraw bot
                 grid[index(this.farmzoids[i].x, this.farmzoids[i].y)].show_farmzoid(this.farmzoids[i].color);
@@ -818,7 +859,7 @@ function setup() // P5 Setup Fcn
     workingmem.drawFarmZoids();
 
     // Change framerate speed
-    frameRate(0.5);
+    frameRate(2);
     //do_btn( ); 
 }
 
