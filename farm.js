@@ -75,7 +75,7 @@ plots           : list of plots on the land
 blight          : bApple, bCorn, bBerry, none
 *******************************************************************************************************************/
 class Nature {
-    constructor() {
+    constructor(validPLots) {
         this.sky = "clear";
         this.wind = "N";
         this.temperature = "warm";
@@ -101,13 +101,11 @@ class Nature {
             if (rng <= 5) {
                 console.log("\tSky is rainy");
                 this.sky = "rainy";
-                return "rainy";
-            }
 
-            return "cloudy";
+            }
         }
-        this.sky = clear;
-        return false;
+        console.log("\tSky is clear");
+        this.sky = "clear";
     }
 
 
@@ -143,7 +141,7 @@ x               : x-coord
 y               : y-coord
 *******************************************************************************************************************/
 class Plant {
-    constructor() {
+    constructor(x, y) {
         this.plantType = null; 
         this.growthCycle = "seed";
         this.waterReserve = 0;
@@ -152,99 +150,109 @@ class Plant {
         this.blight = null;
         this.taskDone = null;
         this.age = 0;
-        this.plantColor = null  // RGB color value
+        this.plantColor = null;  // RGB color value
         
-        this.x;
-        this.y;
+        this.x = x;
+        this.y = y;
     }
 
     incrementAge() {
         this.age++;
-        console.log("increased age to " + this.age)
+        console.log("increased age to " + this.age);
     }
 
     decrementAge() {
         this.age--;
-        console.log("decrease age to " + this.age)
+        console.log("decrease age to " + this.age);
     }
 
     doPlantTask(currTask) {
         // Task water plant
         if (currTask.taskName === "water") {
-            this.waterReserve++
+            this.waterReserve++;
             console.log("plant watered, waterReseve: " + this.waterReserve);
         }
 
         // Task soap to remove blight
         if (currTask.taskName === "soap") {
             this.plantBlight = null;
-            console.log("blight fixed")
+            console.log("blight fixed");
         }
 
         // Task fertilize
         if (currTask.taskName === "fertilize") {
             this.fertilized = true;
-            console.log("plant fertilized")
+            console.log("plant fertilized");
         }
     }
 
     // do plant color change here
     updateGrowthCycle() {
+        console.log("plantType: " + this.plantType);
+        console.log("waterReserve: " + this.waterReserve);
+        console.log("growthCycle: " + this.growthCycle);
+        console.log( "plantColor: " +this.plantColor);
+        console.log( "blight: " +this.blight);
+        console.log("location: " + this.x + " " + this.y);
+
         // Apple growth cycle
-        if (this.plantType === "apple" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 1 && this.growthCycle === "seed" && this.blight === null) {
-            this.growthCycle = "stalk"
-            console.log("apple seed is now a stalk")
+        if (this.plantType === "apple" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age === 1 && this.growthCycle === "seed" && this.blight === null) {
+            this.growthCycle = "stalk";
+            this.plantColor = plantStageColors.greenPlantColor;
+            console.log("apple seed is now a stalk " + this.plantColor);
         }
-        if (this.plantType === "apple" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 4 && this.growthCycle === "stalk" && this.blight === null) {
-            this.growthCycle = "bush"
-            console.log("apple stalk is now a bush")
+        if (this.plantType === "apple" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age === 4 && this.growthCycle === "stalk" && this.blight === null) {
+            this.growthCycle = "bush";
+            console.log("apple stalk is now a bush");
         }
-        if (this.plantType === "apple" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 10 && this.growthCycle === "bush" && this.blight === null) {
-            this.growthCycle = "flower"
-            console.log("apple bush is now a flower")
+        if (this.plantType === "apple" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age === 10 && this.growthCycle === "bush" && this.blight === null) {
+            this.growthCycle = "flower";
+            console.log("apple bush is now a flower");
         }
-        if (this.plantType === "apple" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 13 && this.growthCycle === "flower" && this.blight === null) {
-            this.growthCycle = "fruiting"
-            this.fruitingState = "green"
-            console.log("apple flower is now fruiting")
+        if (this.plantType === "apple" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age === 13 && this.growthCycle === "flower" && this.blight === null) {
+            this.growthCycle = "fruiting";
+            this.fruitingState = "green";
+            console.log("apple flower is now fruiting");
         }
 
         // Berry growth cycle
-        if (this.plantType === "berry" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 1 && this.growthCycle === "seed" && this.blight === null) {
-            this.growthCycle = "stalk"
-            console.log("berry seed is now a stalk")
+        if (this.plantType === "berry" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age >= 1 && this.growthCycle === "seed" && this.blight === null) {
+            this.growthCycle = "stalk";
+            this.plantColor = plantStageColors.greenPlantColor;
+            console.log("berry seed is now a stalk");
         }
         if (this.plantType === "berry" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 4 && this.growthCycle === "stalk" && this.blight === null) {
-            this.growthCycle = "bush"
-            console.log("berry stalk is now bush")
+            this.growthCycle = "bush";
+            console.log("berry stalk is now bush");
         }
         if (this.plantType === "berry" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 8 && this.growthCycle === "bush" && this.blight === null) {
-            this.growthCycle = "flower"
-            console.log("berry bush is now flower")
+            this.growthCycle = "flower";
+            console.log("berry bush is now flower");
         }
         if (this.plantType === "berry" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 10 && this.growthCycle === "flower" && this.blight === null) {
-            this.growthCycle = "fruiting"
-            this.fruitingState = "green"
-            console.log("berry flower is now fruiting")
+            this.growthCycle = "fruiting";
+            this.fruitingState = "green";
+            console.log("berry flower is now fruiting");
         }
 
         // Corn growth cycle
-        if (this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 1 && this.growthCycle === "seed" && this.blight === null) {
-            this.growthCycle = "stalk"
-            console.log("corn seed is now stalk")
+        if (this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age >= 1 && this.growthCycle === "seed" && this.blight === null) {
+            this.growthCycle = "stalk";
+            this.plantColor = plantStageColors.greenPlantColor;
+            console.log("corn seed is now stalk");
         }
         if (this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 3 && this.growthCycle === "stalk" && this.blight === null) {
-            this.growthCycle = "bush"
-            console.log("corn stalk is now bush")
+            this.growthCycle = "bush";
+            console.log("corn stalk is now bush");
         }
         if (this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 5 && this.growthCycle === "bush" && this.blight === null) {
-            this.growthCycle = "flower"
-            console.log("corn bush is now flower")
+            this.growthCycle = "flower";
+            console.log("corn bush is now flower");
         }
         if (this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age > 7 && this.growthCycle === "flower" && this.blight === null) {
-            this.growthCycle = "fruiting"
-            this.fruitingState = "green"
-            console.log("corn flower is now fruiting")
+            this.growthCycle = "fruiting";
+            this.fruitingState = "green";
+            console.log("corn flower is now fruiting");
         }
     }
 
@@ -252,63 +260,57 @@ class Plant {
     updateFruitingState() {
         // Apple Fruiting State
         if (this.plantType === "apple" && this.waterReserve > 0 && this.waterReserve < 3 && this.age > 15 && this.fruitingState === "green" && this.blight === null) {
-            this.fruitingState = "red"
-            console.log("apple is now harvestable")
+            this.fruitingState = "red";
+            console.log("apple is now harvestable");
         }
 
         // Berry fruitying state
         if (this.plantType === "berry" && this.waterReserve > 0 && this.waterReserve < 3 && this.age > 11 && this.fruitingState === "green" && this.blight === null) {
-            this.fruitingState = "red"
-            console.log("berry is now harvestable")
+            this.fruitingState = "red";
+            console.log("berry is now harvestable");
         }
 
         // Corn fruiting state
         if (this.plantType === "corn" && this.waterReserve > 0 && this.waterReserve < 3 && this.age > 8 && this.fruitingState === "green" && this.blight === null) {
-            this.fruitingState = "red"
-            console.log("corn is now harvestable")
+            this.fruitingState = "red";
+            console.log("corn is now harvestable");
         }
     }
 
     // do blight effect of cell here
     blightEffects(blight) {
         if (blight === this.plantType) {
-            this.blight = blight
+            this.blight = blight;
         }
     }
 
     // do change color of plant cell here :) :)
-    getPlantColor() { 
+    decrementPlantColor() { 
 
         // Green
         if(this.plantColor === plantStageColors.greenPlantColor) {
             this.plantColor = plantStageColors.yellowPlantColor;
-            return this.plantColor;
         }
         // Yellow
         else if(this.plantColor === plantStageColors.yellowPlantColor) {
             this.plantColor = plantStageColors.brownPlantColor;
-            return this.plantColor;
         }
         // Brown
         else if(this.plantColor ===  plantStageColors.brownPlantColor) {
             this.plantColor =  plantStageColors.deadPlantColor;
-            return this.plantColor;
         }
         // black and drop fruit somewehre
         else if(this.plantColor === plantStageColors.deadPlantColor)
         {
             this.fruitStageColors = fruitStageColors.deadPlant;
-            return this.fruitStageColors
         }
 
         // red fruiting
         if(this.fruitingState === "red" && this.growthCycle === 'fruiting')
         {
             this.fruitStageColors = fruitStageColors.redfruit;
-            return this.fruitStageColors
         }
 
-         return"red";
     }
 
     setPlantCoords(x, y) {
@@ -329,7 +331,7 @@ class Plot {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.plant = new Plant();
+        this.plant = null;
         this.hasPlot = false;
         this.taskDone = null;
     }
@@ -339,7 +341,8 @@ class Plot {
             this.hasPlot = true;
         }
         if (task.taskName === "plant seed" && this.hasPlot === true) {
-            this.plant.plantType = task.equipment;
+            this.plant = new Plant(this.x, this.y);
+            this.plant.plantType = task.equipment;  // Seed type
         }
     }
 }
@@ -384,9 +387,8 @@ class Farmzoid {
         this.hasTask = true;
     }
 
-    doTask() {
+      doTask() {
         if(this.task.plotLocation.x === this.x && this.task.plotLocation.y === this.y) {
-            console.log("doPlotTask() 1");
             this.task.plotLocation.doPlotTask(this.task);
             this.task.taskCompleted = true;
             this.task.taskAssigned = false;
@@ -396,7 +398,6 @@ class Farmzoid {
         }
 
         if(this.task.plotLocation.x === this.x && this.task.plotLocation.y === this.y && this.task.plotLocation.plant != null) {
-            console.log("doPlantTask() 2");
             this.task.plotLocation.plant.doPlantTask(this.task);
             this.task.taskCompleted = true;
             this.task.taskAssigned = false;
@@ -551,6 +552,7 @@ class FMS {
     // Do daily nature effects
     natureEffects() {
         console.log("natureEffects()");
+        console.log("1111111111111111111");
         nature.updateWeather(); // Update the weather
 
         // Check all plots
@@ -558,6 +560,7 @@ class FMS {
             
             // If there is a plant in the plot
             if(this.validPlots[i].plant != null) {
+                console.log("123123123123123");
                 this.validPlots[i].plant.incrementAge();
                 this.validPlots[i].plant.updateGrowthCycle();
                 this.validPlots[i].plant.updateFruitingState();
@@ -580,11 +583,16 @@ class FMS {
                     console.log("\tday was cloudy, stall ageing")
                 }
 
-                // Decrement color if water reserve is 0
-                if(this.validPlots[i].plant.waterReserve === 0 && this.validPlots[i].plant.plantColor != null) {
-                    let color = validPlots[i].plant.getPlantColor();                       // Get plant color
-                    grid[index(validPlots[i].y, validPlots[i].x)].show_plantColor(color);  // Draw plant color
-                }
+                //Decrement color if water reserve is 0, else update the color each day
+                // if(this.validPlots[i].plant.waterReserve === 0 && this.validPlots[i].plant != null && this.validPlots[i].plant.plantType != "seed") {
+                //     console.log("DECREMENTING PLANT COLORS");
+                //     this.validPlots[i].plant.decrementPlantColor();                       // Get plant color
+                //     grid[index(this.validPlots[i].y, this.validPlots[i].x)].show_plantColor(this.validPlots[i].plant.plantColor);  // Draw plant color
+                // } 
+                // if(this.validPlots[i].plant.waterReserve <=3 && this.validPlots[i].plant.waterReserve >=1 && this.validPlots[i].plant != null) {
+                //     console.log("UPDATING PLANT COLORS");       // Get plant color
+                //     grid[index(this.validPlots[i].y, this.validPlots[i].x)].show_plantColor(this.validPlots[i].plant.plantColor);  // Draw plant color
+                // }
 
                 // Dead
                 if(this.validPlots[i].plant.fruitingState === "black" && this.validPlots[i].plant.age === this.validPlots[i].plant.age + 2) {
@@ -633,7 +641,7 @@ class WorkingMem {
         this.nature = nature;
         this.fms = fms;
         this.farmzoids = [new Farmzoid(21, 19, "green"), new Farmzoid(17, 19, "blue"),
-        new Farmzoid(19, 21, "pink"), new Farmzoid(19, 17, "yellow")];
+                            new Farmzoid(19, 21, "pink"), new Farmzoid(19, 17, "yellow")];
         this.taskList = [];
     }
 
@@ -706,7 +714,6 @@ class WorkingMem {
             let x = workingmem.farmzoids[i].x;
             let y = workingmem.farmzoids[i].y;
             let color = workingmem.farmzoids[i].color;
-            //            console.log("Farmzoid # " + i + " at " + x + ", " + y);
             grid[index(x, y)].show_farmzoid(color);
         }
     }
@@ -782,14 +789,14 @@ let validPlots = [new Plot(plotLocations[0][0], plotLocations[0][1]),
                     new Plot(plotLocations[18][0], plotLocations[18][1]),
                     new Plot(plotLocations[19][0], plotLocations[19][1])];
 
-var nature = new Nature();
+var nature = new Nature(validPlots);
 var fms = new FMS(1, validPlots);
 var workingmem = new WorkingMem(nature, fms, validPlots);
 
 var cols, rows;
 
 let mainDayCount = 0;
-let dailyTaskCount = 50;
+let dailyTaskCount = 200;
 
 // End of Farm Methods
 
@@ -845,22 +852,23 @@ function setup() // P5 Setup Fcn
     workingmem.drawFarmZoids();
 
     // Change framerate speed
-    frameRate(2);
+    frameRate(20);
     //do_btn( ); 
 }
 
 // Main farm loop?
 function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
 {
-    console.log("frame = " + frameCounter);
+    console.log("frame = " + dailyTaskCount);
     frameCounter++;
 
     workingmem.drawGrid();          // Draw grid
     workingmem.checkNeighbors();    // Draw farmzoids
 
-    if (dailyTaskCount === 50) {
+    if (dailyTaskCount >= 200) {
         mainDayCount++;
-        console.log("\tit's a new day, day " + mainDayCount)
+        alert("New day! " + mainDayCount);
+        console.log("\t*NEW DAY " + mainDayCount + "*")
         dailyTaskCount = 0;
         workingmem.fms.natureEffects();
 
@@ -871,7 +879,7 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
     } else {
         workingmem.assignTasks();
         for (let j = 0; j < workingmem.farmzoids.length; j++) {
-            workingmem.farmzoids[j].doTask()
+            workingmem.farmzoids[j].doTask();
         }
     }
 
