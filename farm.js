@@ -667,20 +667,26 @@ class WorkingMem {
                 }
             } else {
                 console.log("\tadding task to plant seed");
-                this.taskList.push(new Task("plant seed", this.validPlots[i], "apple"));
+                let rng = Math.floor((Math.random() * 3) + 1);  // 1 - 3
+                switch(rng) {
+                    case 1: this.taskList.push(new Task("plant seed", this.validPlots[i], "apple"));
+                            break;
+                    case 2: this.taskList.push(new Task("plant seed", this.validPlots[i], "corn"));
+                            break;
+                    case 3: this.taskList.push(new Task("plant seed", this.validPlots[i], "berry"));
+                            break;
+                }
             }
         }
     }
 
     assignTasks() {
         for (let i = 0; i < 4; i++) {
-            if (this.farmzoids[i].hasTask === false && this.taskList.length != 0) {
+            if (this.farmzoids[i].hasTask === false) {
                 this.farmzoids[i].setTask(this.taskList.pop());
                 console.log("task: " + this.farmzoids[i].task.taskName + " at: " + this.farmzoids[i].task.plotLocation.x + " " + this.farmzoids[i].task.plotLocation.y + " assigned to bot " + i);
                 this.farmzoids[i].setGoal(this.farmzoids[i].task.plotLocation.x, this.farmzoids[i].task.plotLocation.y);
-            } else if (this.taskList.length === 0) {
-                dailyTaskCount = 200;
-            }
+            } 
         }
     }
 
@@ -867,6 +873,7 @@ function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
 
     workingmem.drawGrid();          // Draw grid
     workingmem.checkNeighbors();    // Draw farmzoids
+    dayCount.innerText = "Day " + mainDayCount;
 
     if (dailyTaskCount >= 200) {
         mainDayCount++;
