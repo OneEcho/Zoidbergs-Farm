@@ -194,6 +194,7 @@ class Plant {
         console.log( "plantColor: " +this.plantColor);
         console.log( "blight: " +this.blight);
         console.log("location: " + this.x + " " + this.y);
+        console.log("fertilized" + this.fertilized);
 
         // Apple growth cycle
         if (this.plantType === "apple" && this.waterReserve > 0 && this.waterReserve <= 3 && this.age === 1 && this.growthCycle === "seed" && this.blight === null) {
@@ -340,7 +341,7 @@ class Plot {
         if (task.taskName === "place plot") {
             this.hasPlot = true;
         }
-        if (task.taskName === "plant seed" && this.hasPlot === true) {
+        if (task.taskName === "plant seed" && task.plotLocation.hasPlot === true) {
             this.plant = new Plant(this.x, this.y);
             this.plant.plantType = task.equipment;  // Seed type
         }
@@ -387,7 +388,7 @@ class Farmzoid {
         this.hasTask = true;
     }
 
-      doTask() {
+    doTask() {
         if(this.task.plotLocation.x === this.x && this.task.plotLocation.y === this.y) {
             this.task.plotLocation.doPlotTask(this.task);
             this.task.taskCompleted = true;
@@ -673,10 +674,12 @@ class WorkingMem {
 
     assignTasks() {
         for (let i = 0; i < 4; i++) {
-            if (this.farmzoids[i].hasTask === false) {
+            if (this.farmzoids[i].hasTask === false && this.taskList.length != 0) {
                 this.farmzoids[i].setTask(this.taskList.pop());
                 console.log("task: " + this.farmzoids[i].task.taskName + " at: " + this.farmzoids[i].task.plotLocation.x + " " + this.farmzoids[i].task.plotLocation.y + " assigned to bot " + i);
                 this.farmzoids[i].setGoal(this.farmzoids[i].task.plotLocation.x, this.farmzoids[i].task.plotLocation.y);
+            } else if (this.taskList.length === 0) {
+                dailyTaskCount = 200;
             }
         }
     }
@@ -852,14 +855,14 @@ function setup() // P5 Setup Fcn
     workingmem.drawFarmZoids();
 
     // Change framerate speed
-    frameRate(20);
+    frameRate(10);
     //do_btn( ); 
 }
 
 // Main farm loop?
 function draw()  // P5 Frame Re-draw Fcn, Called for Every Frame.
 {
-    console.log("frame = " + dailyTaskCount);
+    //console.log("frame = " + dailyTaskCount);
     frameCounter++;
 
     workingmem.drawGrid();          // Draw grid
